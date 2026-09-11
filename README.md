@@ -105,6 +105,13 @@ compilation ne le ciblera pas** ; à l'inverse, un identifiant inconnu du SDK fa
 Dans VS Code : `Ctrl/Cmd+Shift+P` → **Monkey C: Edit Products** → coche ta montre.
 C'est la manière sûre de modifier cette liste.
 
+Sont déjà couverts : Fenix 6/7, Epix (Gen 2) et **Epix Pro (Gen 2) en 42, 47 et
+51 mm**, Forerunner 245/255/265/745/945/955/965, Venu/Venu 2/Venu Sq,
+Vivoactive 4, Instinct 2, Descent Mk2, Approach S62, D2 Air.
+Attention : les variantes « Pro » ont leur propre identifiant (`epix2pro47mm` et
+non `epix2`) — un modèle Pro absent de la liste ne serait tout simplement pas
+ciblé par la compilation.
+
 ### 3. Compiler et installer
 
 Dans VS Code : `Ctrl/Cmd+Shift+P` → **Monkey C: Build for Device**, choisis ta
