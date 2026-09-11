@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Valeurs par defaut des reglages. Les seuils sont toujours en mg/dL. -->
+<properties>
+    <property id="dataSource" type="number">0</property>
+
+    <property id="lluEmail" type="string"></property>
+    <property id="lluPassword" type="string"></property>
+    <property id="lluRegion" type="string">eu</property>
+    <property id="lluApiVersion" type="string">4.16.0</property>
+
+    <property id="nightscoutUrl" type="string"></property>
+    <property id="nightscoutToken" type="string"></property>
+
+    <property id="useMmol" type="boolean">false</property>
+
+    <property id="urgentLow" type="number">55</property>
+    <property id="lowThreshold" type="number">70</property>
+    <property id="highThreshold" type="number">180</property>
+    <property id="urgentHigh" type="number">250</property>
+
+    <property id="refreshSeconds" type="number">60</property>
+    <property id="chartHours" type="number">3</property>
+    <property id="backgroundEnabled" type="boolean">true</property>
+    <property id="vibrateOnAlert" type="boolean">true</property>
+</properties>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ecran de reglages affiche dans Garmin Connect Mobile / Garmin Express. -->
+<settings>
+    <setting propertyKey="@Properties.dataSource" title="@Strings.SetSource" prompt="@Strings.SetSourcePrompt">
+        <settingConfig type="list">
+            <listEntry value="0">@Strings.SourceLibreLinkUp</listEntry>
+            <listEntry value="1">@Strings.SourceNightscout</listEntry>
+        </settingConfig>
+    </setting>
+
+    <setting propertyKey="@Properties.lluEmail" title="@Strings.SetLluEmail" prompt="@Strings.SetLluEmailPrompt">
+        <settingConfig type="alphaNumeric" maxLength="64"/>
+    </setting>
+    <setting propertyKey="@Properties.lluPassword" title="@Strings.SetLluPassword" prompt="@Strings.SetLluPasswordPrompt">
+        <settingConfig type="alphaNumeric" maxLength="64"/>
+    </setting>
+    <setting propertyKey="@Properties.lluRegion" title="@Strings.SetLluRegion" prompt="@Strings.SetLluRegionPrompt">
+        <settingConfig type="alphaNumeric" maxLength="4"/>
+    </setting>
+
+    <setting propertyKey="@Properties.lluApiVersion" title="@Strings.SetLluVersion" prompt="@Strings.SetLluVersionPrompt">
+        <settingConfig type="alphaNumeric" maxLength="10"/>
+    </setting>
+
+    <setting propertyKey="@Properties.nightscoutUrl" title="@Strings.SetNsUrl" prompt="@Strings.SetNsUrlPrompt">
+        <settingConfig type="alphaNumeric" maxLength="128"/>
+    </setting>
+    <setting propertyKey="@Properties.nightscoutToken" title="@Strings.SetNsToken" prompt="@Strings.SetNsTokenPrompt">
+        <settingConfig type="alphaNumeric" maxLength="64"/>
+    </setting>
+
+    <setting propertyKey="@Properties.useMmol" title="@Strings.SetUseMmol" prompt="@Strings.SetUseMmolPrompt">
+        <settingConfig type="boolean"/>
+    </setting>
+
+    <setting propertyKey="@Properties.urgentLow" title="@Strings.SetUrgentLow" prompt="@Strings.SetThresholdPrompt">
+        <settingConfig type="numeric" min="40" max="100"/>
+    </setting>
+    <setting propertyKey="@Properties.lowThreshold" title="@Strings.SetLow" prompt="@Strings.SetThresholdPrompt">
+        <settingConfig type="numeric" min="50" max="120"/>
+    </setting>
+    <setting propertyKey="@Properties.highThreshold" title="@Strings.SetHigh" prompt="@Strings.SetThresholdPrompt">
+        <settingConfig type="numeric" min="120" max="300"/>
+    </setting>
+    <setting propertyKey="@Properties.urgentHigh" title="@Strings.SetUrgentHigh" prompt="@Strings.SetThresholdPrompt">
+        <settingConfig type="numeric" min="150" max="400"/>
+    </setting>
+
+    <setting propertyKey="@Properties.refreshSeconds" title="@Strings.SetRefresh" prompt="@Strings.SetRefreshPrompt">
+        <settingConfig type="numeric" min="30" max="600"/>
+    </setting>
+    <setting propertyKey="@Properties.chartHours" title="@Strings.SetChartHours" prompt="@Strings.SetChartHoursPrompt">
+        <settingConfig type="numeric" min="1" max="6"/>
+    </setting>
+    <setting propertyKey="@Properties.backgroundEnabled" title="@Strings.SetBackground" prompt="@Strings.SetBackgroundPrompt">
+        <settingConfig type="boolean"/>
+    </setting>
+    <setting propertyKey="@Properties.vibrateOnAlert" title="@Strings.SetVibrate" prompt="@Strings.SetVibratePrompt">
+        <settingConfig type="boolean"/>
+    </setting>
+</settings>

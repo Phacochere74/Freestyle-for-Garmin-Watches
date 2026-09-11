@@ -1,0 +1,3 @@
+# Fichier de projet Connect IQ.
+# Les sources sont dans source/, les ressources dans resources/.
+project.manifest = manifest.xml

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Libelles affiches dans Garmin Connect Mobile (ecran de reglages de l'appli).
+  Ce dossier resources/ sert aussi de repli pour toutes les langues : pour
+  ajouter une traduction, creer resources-eng/strings/strings.xml avec les
+  memes identifiants.
+-->
+<strings>
+    <string id="AppName">Freestyle</string>
+
+    <string id="SetSource">Source des donnees</string>
+    <string id="SetSourcePrompt">LibreLinkUp lit les mesures televersees par l'application FreeStyle Libre 3.</string>
+    <string id="SourceLibreLinkUp">LibreLinkUp</string>
+    <string id="SourceNightscout">Nightscout</string>
+
+    <string id="SetLluEmail">LibreLinkUp : email</string>
+    <string id="SetLluEmailPrompt">Email du compte suiveur LibreLinkUp.</string>
+    <string id="SetLluPassword">LibreLinkUp : mot de passe</string>
+    <string id="SetLluPasswordPrompt">Utilise un compte suiveur dedie : le mot de passe est stocke dans les reglages de la montre.</string>
+    <string id="SetLluRegion">LibreLinkUp : region</string>
+    <string id="SetLluRegionPrompt">eu, us, de, fr, jp, ap, au, ca... Laisse "eu" si tu ne sais pas : l'appli suit la redirection automatiquement.</string>
+
+    <string id="SetLluVersion">LibreLinkUp : version d'API</string>
+    <string id="SetLluVersionPrompt">En-tete "version" envoye a l'API. Si la connexion est refusee, essaie une version plus recente (ex. 4.17.0).</string>
+
+    <string id="SetNsUrl">Nightscout : URL</string>
+    <string id="SetNsUrlPrompt">Adresse complete en https, par exemple https://moncgm.fly.dev</string>
+    <string id="SetNsToken">Nightscout : jeton</string>
+    <string id="SetNsTokenPrompt">Jeton d'acces en lecture (facultatif si le site est public).</string>
+
+    <string id="SetUseMmol">Afficher en mmol/L</string>
+    <string id="SetUseMmolPrompt">Desactive pour afficher en mg/dL.</string>
+
+    <string id="SetUrgentLow">Seuil hypo severe (mg/dL)</string>
+    <string id="SetLow">Seuil bas (mg/dL)</string>
+    <string id="SetHigh">Seuil haut (mg/dL)</string>
+    <string id="SetUrgentHigh">Seuil hyper severe (mg/dL)</string>
+    <string id="SetThresholdPrompt">Toujours en mg/dL, meme si l'affichage est en mmol/L (1 mmol/L = 18 mg/dL).</string>
+
+    <string id="SetRefresh">Rafraichissement (s)</string>
+    <string id="SetRefreshPrompt">Delai entre deux requetes quand l'application est ouverte (30 a 600 s).</string>
+    <string id="SetChartHours">Duree du graphique (h)</string>
+    <string id="SetChartHoursPrompt">Fenetre affichee sur la courbe, de 1 a 6 heures.</string>
+    <string id="SetBackground">Mise a jour en arriere-plan</string>
+    <string id="SetBackgroundPrompt">Actualise la valeur toutes les 5 minutes meme application fermee. A desactiver si la montre manque de memoire.</string>
+    <string id="SetVibrate">Vibrer hors de la plage cible</string>
+    <string id="SetVibratePrompt">Alerte quand la valeur sort des seuils, application ouverte. Ne remplace pas les alarmes du capteur.</string>
+</strings>
