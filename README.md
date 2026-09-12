@@ -88,13 +88,17 @@ LibreView principal. Concrètement :
 - [SDK Connect IQ](https://developer.garmin.com/connect-iq/sdk/) (SDK Manager, puis
   installe au moins un SDK 6.x ou 7.x et le device de ta montre)
 - [VS Code](https://code.visualstudio.com/) + extension **Monkey C** (Garmin)
-- Une clé développeur :
+- Une clé développeur : dans VS Code, `Ctrl/Cmd+Shift+P` →
+  **Monkey C: Generate a Developer Key**. Sauvegarde-la : sans elle, plus de mise
+  à jour possible de la même application.
 
-```bash
-openssl genrsa -out developer_key.pem 4096
-openssl pkcs8 -topk8 -inform PEM -outform DER \
-  -in developer_key.pem -out developer_key.der -nocrypt
-```
+  *(Équivalent en ligne de commande, si tu préfères :
+  `openssl genrsa -out developer_key.pem 4096` puis
+  `openssl pkcs8 -topk8 -inform PEM -outform DER -in developer_key.pem -out developer_key.der -nocrypt`)*
+
+**Jamais fait de développement Garmin ?** Suis
+[`docs/demarrage-windows.md`](docs/demarrage-windows.md) : installation pas à pas
+sous Windows, principes de la plateforme et diagnostic des erreurs courantes.
 
 ### 2. Vérifier que ta montre est dans la liste
 
