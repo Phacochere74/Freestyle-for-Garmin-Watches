@@ -196,13 +196,48 @@ Dans **Garmin Connect Mobile** → *Appareils* → ta montre → *Applications C
 
 ---
 
+## Ce qui a été vérifié, et comment
+
+Le SDK Connect IQ n'étant pas disponible dans l'environnement où ce code a été
+écrit, deux garde-fous remplacent la compilation — imparfaitement, mais mieux
+que rien.
+
+**Une revue de code critique** a été passée sur l'ensemble du projet. Sept
+défauts réels ont été trouvés et corrigés, dont un bloquant :
+
+| Défaut | Conséquence si non corrigé |
+|---|---|
+| Le champ de données ne pouvait jamais s'authentifier | Il aurait affiché `--` indéfiniment |
+| Troncature de `Value` avant conversion mmol→mg/dL | 6,9 mmol/L lu comme 108 au lieu de 124 mg/dL, et 3,9 comme 54 → fausse alerte d'hypo sévère |
+| Jeton non conservé en mémoire | Boucle de « session refusée » si l'écriture en stockage échoue |
+| Alerte possible sur une mesure périmée | Vibration sur une valeur basse vieille de deux heures |
+| `http://` accepté comme URL Nightscout | Service en arrière-plan tournant toutes les 5 min pour rien |
+| Région LibreView réapprise à chaque enregistrement des réglages | Allers-retours de redirection inutiles |
+| Champ de données ignorant le réglage d'arrière-plan | Champ figé silencieusement |
+
+**Un banc de test de la logique**, qui transcrit en Python les fonctions pures
+de `source-common/` et les confronte à des cas limites réels :
+
+```bash
+python3 tools/verif_logique.py
+```
+
+47 tests : horodatages LibreLinkUp (minuit et midi en AM/PM, format 24 h,
+entrées malformées), `dateString` Nightscout, extraction de la mesure et repli
+`Value`+`uom`, conversions d'unités, deltas, ancienneté, tendances, purge et
+plafonnement de l'historique, couleurs aux bornes exactes des seuils.
+
+> **Ce que ça ne valide pas** : ni la syntaxe Monkey C, ni les appels d'API
+> Garmin. Seule une compilation avec `monkeyc` peut le faire. Le banc vérifie
+> que les **règles de calcul** sont justes — pas que le code compile.
+
 ## Limites connues, à lire avant de t'en servir
 
-**Le code n'a pas été compilé.** Il a été écrit et relu hors d'un environnement
-disposant du SDK Connect IQ (téléchargement bloqué). Attends-toi à devoir corriger
-quelques erreurs de compilation au premier build — la structure et la logique sont
-en place, mais rien ne remplace un `monkeyc` qui passe. C'est la première chose à
-faire avant de juger le reste.
+**Le code n'a pas été compilé.** Il a été écrit, relu de façon critique et
+testé sur sa logique (voir la section précédente), mais hors d'un environnement
+disposant du SDK Connect IQ. Attends-toi à devoir corriger quelques erreurs de
+compilation au premier build. C'est la première chose à faire avant de juger le
+reste.
 
 **L'API LibreLinkUp n'est pas publique.** Abbott ne la documente pas et la fait
 évoluer sans préavis : en-tête `version` minimal relevé, en-tête `Account-Id`

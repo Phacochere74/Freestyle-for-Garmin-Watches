@@ -76,8 +76,22 @@ class GlucoseDataField extends WatchUi.DataField {
                 "GLYCEMIE", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         }
 
-        var text = Fmt.formatGlucose(mValue, mmol);
-        var hasArrow = (mValue != null && mTrend != Fmt.TREND_UNKNOWN);
+        // Un champ de donnees n'a pas de place pour un message : on affiche un
+        // code court plutot que de laisser un "--" muet qui ne dit pas quoi faire.
+        var text;
+        var numeric = true;
+        if (!Config.isConfigured()) {
+            text = "REGL";
+            numeric = false;
+            valueColor = Theme.adaptToBackground(Graphics.COLOR_ORANGE, background);
+        } else if (!Config.backgroundEnabled()) {
+            text = "OFF";
+            numeric = false;
+            valueColor = Theme.adaptToBackground(Graphics.COLOR_ORANGE, background);
+        } else {
+            text = Fmt.formatGlucose(mValue, mmol);
+        }
+        var hasArrow = (numeric && mValue != null && mTrend != Fmt.TREND_UNKNOWN);
         var arrowSize = (height * 0.13).toNumber();
         if (arrowSize < 5) {
             arrowSize = 5;
@@ -89,8 +103,10 @@ class GlucoseDataField extends WatchUi.DataField {
             available -= (gap + arrowSize * 2);
         }
 
-        var font = (mValue == null)
-            ? Graphics.FONT_MEDIUM
+        // Les polices numeriques ne contiennent que des chiffres : tout texte
+        // non numerique doit passer par une police de texte.
+        var font = (!numeric || mValue == null)
+            ? pickTextFont(dc, text, available, height * 0.5)
             : pickFont(dc, text, available, (showAge || showLabel) ? (height * 0.52) : (height * 0.80));
 
         var textWidth = dc.getTextWidthInPixels(text, font);
@@ -106,7 +122,7 @@ class GlucoseDataField extends WatchUi.DataField {
                 mTrend, valueColor);
         }
 
-        if (showAge) {
+        if (showAge && numeric) {
             var ageText = (mAge == null) ? "--" : Fmt.formatAge(mAge);
             dc.setColor(foreground, Graphics.COLOR_TRANSPARENT);
             dc.drawText(width / 2, (height * 0.87).toNumber(), Graphics.FONT_XTINY,
@@ -123,6 +139,24 @@ class GlucoseDataField extends WatchUi.DataField {
             Graphics.FONT_NUMBER_MILD,
             Graphics.FONT_MEDIUM,
             Graphics.FONT_SMALL
+        ];
+        for (var i = 0; i < candidates.size(); i += 1) {
+            var font = candidates[i];
+            if (dc.getTextWidthInPixels(text, font) <= maxWidth
+                && dc.getFontHeight(font) <= maxHeight) {
+                return font;
+            }
+        }
+        return Graphics.FONT_XTINY;
+    }
+
+    //! Meme principe, mais parmi les polices de texte (chiffres + lettres).
+    hidden function pickTextFont(dc, text, maxWidth, maxHeight) {
+        var candidates = [
+            Graphics.FONT_LARGE,
+            Graphics.FONT_MEDIUM,
+            Graphics.FONT_SMALL,
+            Graphics.FONT_TINY
         ];
         for (var i = 0; i < candidates.size(); i += 1) {
             var font = candidates[i];

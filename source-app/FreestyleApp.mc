@@ -62,10 +62,17 @@ class FreestyleApp extends Application.AppBase {
 
     //! Appele quand les reglages sont modifies depuis Garmin Connect.
     function onSettingsChanged() {
-        // Les identifiants ou la region ont pu changer : la session en cache
-        // n'est plus forcement valable.
+        // Les identifiants ont pu changer : la session en cache n'est plus
+        // forcement valable.
         Store.clearSession();
-        Store.setRegion(Config.lluRegion());
+        // La region apprise par redirection ne doit etre ecrasee que si
+        // l'utilisateur a reellement modifie le reglage de region : sinon chaque
+        // enregistrement de reglages relancerait un aller-retour de redirection.
+        var configuredRegion = Config.lluRegion();
+        if (!configuredRegion.equals(Store.getRegionSetting())) {
+            Store.setRegionSetting(configuredRegion);
+            Store.setRegion(configuredRegion);
+        }
         Store.clearError();
         scheduleBackground();
         WatchUi.requestUpdate();

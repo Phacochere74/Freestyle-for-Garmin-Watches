@@ -56,7 +56,11 @@ class FreestyleDataFieldApp extends Application.AppBase {
 
     function onSettingsChanged() {
         Store.clearSession();
-        Store.setRegion(Config.lluRegion());
+        var configuredRegion = Config.lluRegion();
+        if (!configuredRegion.equals(Store.getRegionSetting())) {
+            Store.setRegionSetting(configuredRegion);
+            Store.setRegion(configuredRegion);
+        }
         Store.clearError();
         scheduleBackground();
         WatchUi.requestUpdate();
@@ -67,7 +71,10 @@ class FreestyleDataFieldApp extends Application.AppBase {
             return;
         }
         try {
-            if (Config.isConfigured()) {
+            // Meme condition que l'application : sans ce test, desactiver la mise
+            // a jour en arriere-plan laisserait un evenement programme dont le
+            // service ressort immediatement, figeant le champ en silence.
+            if (Config.backgroundEnabled() && Config.isConfigured()) {
                 // 5 minutes : minimum autorise par Connect IQ, et cadence de
                 // publication du capteur Libre.
                 Background.registerForTemporalEvent(new Time.Duration(300));

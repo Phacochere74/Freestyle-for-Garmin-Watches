@@ -169,8 +169,16 @@ reconnaître un projet Connect IQ.
 
 ## 3. Compiler
 
+Le dépôt contient **deux applications** : l'app (écran complet + glance) et le
+champ de données. Compile l'app **en premier** — 80 % du code est partagé, donc
+les corrections d'erreurs profiteront ensuite au champ de données gratuitement.
+
 `Ctrl+Shift+P` → **Monkey C: Build for Device** → choisis `epix2pro47mm`
 (ou ta taille de boîtier).
+
+> Cette commande compile le projet actif. Pour le champ de données, ouvre
+> `datafield.jungle` avant de la lancer. En ligne de commande :
+> `tools/build.sh both epix2pro47mm`.
 
 Deux issues possibles :
 
@@ -215,12 +223,20 @@ Le débogueur (points d'arrêt, inspection des variables) fonctionne aussi, via
 ## 5. Installer sur la montre
 
 1. Branche la montre en USB. Windows la monte comme un lecteur.
-2. Copie `bin\freestyle-epix2pro47mm.prg` dans le dossier **`GARMIN\APPS`** de la montre.
+2. Copie les `.prg` produits dans le dossier **`GARMIN\APPS`** de la montre.
 3. Éjecte proprement et débranche.
-4. L'application apparaît dans la liste des applications de la montre.
+4. L'application apparaît dans la liste des applications ; le champ de données
+   apparaît quand tu personnalises un écran de données d'une activité
+   (**Paramètres de l'activité → Écrans de données → ajouter un champ →
+   Connect IQ**).
 
-Les réglages, eux, se font depuis le téléphone : **Garmin Connect Mobile →
-Appareils → ta montre → Applications Connect IQ → Freestyle → ⚙️ Paramètres**.
+Les réglages se font depuis le téléphone : **Garmin Connect Mobile →
+Appareils → ta montre → Applications Connect IQ → ⚙️ Paramètres**.
+
+> **Les deux applications ont des réglages séparés.** Connect IQ cloisonne
+> totalement les applications : tes identifiants LibreLinkUp sont à saisir une
+> fois pour l'app, une fois pour le champ de données. C'est une contrainte de la
+> plateforme.
 
 > Une application chargée en sideload n'est pas signée par le store : c'est normal,
 > elle fonctionne exactement pareil. Elle n'est simplement visible que par toi.

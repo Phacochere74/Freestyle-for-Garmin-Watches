@@ -88,6 +88,25 @@ module Net {
         return null;
     }
 
+    //! Comme asNumber, mais sans perdre la partie decimale.
+    //! Indispensable pour une valeur en mmol/L : tronquer 6.9 en 6 avant
+    //! conversion donnerait 108 mg/dL au lieu de 124.
+    function asFloat(value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof Lang.Float || value instanceof Lang.Double) {
+            return value.toFloat();
+        }
+        if (value instanceof Lang.Number) {
+            return value.toFloat();
+        }
+        if (value instanceof Lang.String) {
+            return value.toFloat();
+        }
+        return null;
+    }
+
     //! Lecture defensive d'une cle dans un Dictionary issu du JSON.
     function dictGet(dict, key) {
         if (dict == null || !(dict instanceof Lang.Dictionary)) {

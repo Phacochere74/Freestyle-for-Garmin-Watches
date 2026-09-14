@@ -11,49 +11,50 @@
 //      (reponse possible : redirection vers une autre region)
 //   2. GET  /llu/connections      -> derniere mesure du patient suivi
 //
+// L'authentification est autorisee dans TOUS les contextes, y compris le
+// service en arriere-plan : le champ de donnees n'a aucune vue de premier plan
+// et ne pourrait jamais obtenir de jeton autrement. En pratique le jeton
+// LibreLinkUp est valable longtemps, donc cette etape reste rare.
+//
 // L'API n'est pas documentee publiquement par Abbott : elle peut changer sans
 // preavis. Toutes les lectures de champs sont donc defensives.
 //
 using Toybox.Communications;
 using Toybox.Lang;
+using Toybox.Math;
 using Toybox.Time;
 
 (:glance, :background)
 class LibreLinkUpClient {
 
-    // Valeurs d'en-tete attendues par l'API (elles imitent l'app Android).
-    // Abbott releve regulierement la version minimale acceptee : elle est donc
-    // modifiable dans les reglages sans avoir a recompiler.
+    // En-tete attendu par l'API (imite le client Android).
     const PRODUCT = "llu.android";
 
     hidden var mCallback;      // Method(errorMessage, reading)
     hidden var mTriedLogin;    // evite une boucle login <-> 401
     hidden var mRedirects;     // evite une boucle de redirection de region
     hidden var mRegion;
-    hidden var mAllowLogin;    // false en background pour limiter la memoire
+    hidden var mToken;         // conserve en memoire : Store peut echouer a ecrire
+    hidden var mAccountId;
 
     function initialize() {
         mCallback = null;
         mTriedLogin = false;
         mRedirects = 0;
         mRegion = "eu";
-        mAllowLogin = true;
+        mToken = null;
+        mAccountId = null;
     }
 
     //! Lance la recuperation de la derniere mesure.
     //! @param callback Method(errorMessage as String or Null, reading as Dictionary or Null)
-    //! @param allowLogin false pour interdire l'authentification (contexte background)
-    function fetch(callback, allowLogin) {
+    function fetch(callback) {
         mCallback = callback;
         mTriedLogin = false;
         mRedirects = 0;
-        mAllowLogin = allowLogin;
 
         var region = Store.getRegion();
-        if (region == null) {
-            region = Config.lluRegion();
-        }
-        mRegion = region;
+        mRegion = (region == null) ? Config.lluRegion() : region;
 
         if (Config.lluEmail().length() == 0 || Config.lluPassword().length() == 0) {
             finish("Identifiants manquants", null);
@@ -61,11 +62,11 @@ class LibreLinkUpClient {
         }
 
         if (Store.hasValidToken()) {
+            mToken = Store.getToken();
+            mAccountId = Store.getAccountId();
             requestConnections();
-        } else if (mAllowLogin) {
-            login();
         } else {
-            finish("Session expiree", null);
+            login();
         }
     }
 
@@ -102,12 +103,21 @@ class LibreLinkUpClient {
     }
 
     hidden function requestConnections() {
+        // On privilegie le jeton garde en memoire : Store.put() avale les echecs
+        // d'ecriture, un jeton frais pourrait donc ne pas etre relisible.
+        var token = (mToken != null) ? mToken : Store.getToken();
+        if (token == null) {
+            finish("Session absente", null);
+            return;
+        }
+
         var headers = commonHeaders();
-        headers["Authorization"] = "Bearer " + Store.getToken();
-        var accountId = Store.getAccountId();
+        headers["Authorization"] = "Bearer " + token;
+        var accountId = (mAccountId != null) ? mAccountId : Store.getAccountId();
         if (accountId != null) {
             headers["Account-Id"] = accountId;
         }
+
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_GET,
             :headers => headers,
@@ -167,9 +177,10 @@ class LibreLinkUpClient {
 
         // L'API exige l'en-tete Account-Id = SHA-256 de l'identifiant utilisateur.
         var user = Net.dictGet(payload, "user");
-        var userId = Net.dictGet(user, "id");
-        var accountIdHash = Net.sha256Hex(userId);
+        var accountIdHash = Net.sha256Hex(Net.dictGet(user, "id"));
 
+        mToken = token;
+        mAccountId = accountIdHash;
         Store.saveSession(token, expires, accountIdHash, mRegion);
         requestConnections();
     }
@@ -178,7 +189,9 @@ class LibreLinkUpClient {
         if (responseCode == 401 || responseCode == 403) {
             // Jeton refuse : on le jette et on retente une authentification complete.
             Store.clearSession();
-            if (mAllowLogin && !mTriedLogin) {
+            mToken = null;
+            mAccountId = null;
+            if (!mTriedLogin) {
                 mTriedLogin = true;
                 login();
                 return;
@@ -199,11 +212,6 @@ class LibreLinkUpClient {
         }
 
         var connection = connections[0];
-        var patientId = Net.dictGet(connection, "patientId");
-        if (patientId instanceof Lang.String) {
-            Store.setPatientId(patientId);
-        }
-
         var measurement = Net.dictGet(connection, "glucoseMeasurement");
         if (measurement == null) {
             finish("Mesure indisponible", null);
@@ -212,12 +220,17 @@ class LibreLinkUpClient {
 
         var mgdl = Net.asNumber(Net.dictGet(measurement, "ValueInMgPerDl"));
         if (mgdl == null) {
-            // Repli : certains comptes ne renvoient que "Value" dans l'unite du compte.
-            var value = Net.asNumber(Net.dictGet(measurement, "Value"));
+            // Repli : certains comptes ne renvoient que "Value", dans l'unite du
+            // compte. La lecture doit rester en Float : tronquer 6.9 en 6 avant
+            // la conversion donnerait 108 mg/dL au lieu de 124.
+            var value = Net.asFloat(Net.dictGet(measurement, "Value"));
             var uom = Net.asNumber(Net.dictGet(connection, "uom"));
             if (value != null) {
                 // uom = 1 -> mg/dL, uom = 2 -> mmol/L
-                mgdl = (uom != null && uom == 2) ? (value / Fmt.MMOL_PER_MGDL).toNumber() : value;
+                if (uom != null && uom == 2) {
+                    value = value * Fmt.MGDL_PER_MMOL;
+                }
+                mgdl = Math.round(value).toNumber();
             }
         }
         if (mgdl == null || mgdl <= 0) {

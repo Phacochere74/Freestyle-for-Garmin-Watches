@@ -140,7 +140,9 @@ module Config {
     function isConfigured() {
         if (dataSource() == SOURCE_NIGHTSCOUT) {
             var url = nightscoutUrl();
-            return url.length() > 0 && url.find("http") == 0;
+            // Connect IQ refuse les requetes non chiffrees : accepter "http://"
+            // ici ferait tourner un service en arriere-plan qui echoue toujours.
+            return url.find("https://") == 0;
         }
         return lluEmail().length() > 0 && lluPassword().length() > 0;
     }

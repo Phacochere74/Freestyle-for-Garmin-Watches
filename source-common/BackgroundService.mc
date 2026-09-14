@@ -30,10 +30,11 @@ class BackgroundService extends System.ServiceDelegate {
             return;
         }
         mFetcher = new Fetcher();
-        // allowLogin = false : pas d'authentification LibreLinkUp ici.
+        // L'authentification est autorisee ici : le champ de donnees n'a aucune
+        // vue de premier plan, ce service est son SEUL moyen d'obtenir un jeton.
         // start() peut echouer immediatement et avoir deja appele onResult(),
         // d'ou le garde-fou mExited : Background.exit() ne doit partir qu'une fois.
-        if (!mFetcher.start(method(:onResult), false, 1)) {
+        if (!mFetcher.start(method(:onResult), 1)) {
             exitOnce(null);
         }
     }

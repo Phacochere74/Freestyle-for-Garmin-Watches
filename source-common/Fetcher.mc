@@ -25,10 +25,9 @@ class Fetcher {
 
     //! Demarre une recuperation.
     //! @param callback Method(errorMessage as String or Null, reading as Dictionary or Null)
-    //! @param allowLogin autorise l'authentification LibreLinkUp (false en background)
     //! @param historyCount nombre de mesures Nightscout demandees
     //! @return true si la requete a bien ete lancee
-    function start(callback, allowLogin, historyCount) {
+    function start(callback, historyCount) {
         if (mBusy) {
             return false;
         }
@@ -45,7 +44,7 @@ class Fetcher {
             mClient.fetch(method(:onResult), historyCount);
         } else {
             mClient = new LibreLinkUpClient();
-            mClient.fetch(method(:onResult), allowLogin);
+            mClient.fetch(method(:onResult));
         }
         return true;
     }

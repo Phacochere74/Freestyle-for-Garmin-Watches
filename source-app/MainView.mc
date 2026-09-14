@@ -89,7 +89,7 @@ class MainView extends WatchUi.View {
         // mFetching est positionne avant l'appel : en cas d'erreur immediate,
         // start() rappelle onFetch() de maniere synchrone et le remet a false.
         mFetching = true;
-        mFetcher.start(method(:onFetch), true, historyCount);
+        mFetcher.start(method(:onFetch), historyCount);
         WatchUi.requestUpdate();
     }
 
@@ -109,6 +109,13 @@ class MainView extends WatchUi.View {
         }
         var value = Store.readingValue(reading);
         if (value == null) {
+            return;
+        }
+        // Ne jamais alerter sur une mesure que l'ecran grise deja comme perimee :
+        // apres une reconnexion du telephone, une valeur basse vieille de deux
+        // heures declencherait une vibration injustifiee.
+        var age = Theme.ageOf(reading);
+        if (age == null || age > Theme.STALE_SECONDS) {
             return;
         }
         var now = Time.now().value();

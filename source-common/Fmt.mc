@@ -13,8 +13,9 @@ using Toybox.Time.Gregorian;
 (:glance, :background)
 module Fmt {
 
-    // Facteur de conversion officiel mg/dL -> mmol/L pour le glucose.
-    const MMOL_PER_MGDL = 0.0555;
+    // Facteur de conversion officiel du glucose. Une seule constante, utilisee
+    // dans les deux sens, pour eviter que l'aller-retour ne derive.
+    const MGDL_PER_MMOL = 18.0182;
 
     // Tendances internes (independantes de la source de donnees).
     enum {
@@ -83,7 +84,7 @@ module Fmt {
 
     //! Convertit une valeur mg/dL en mmol/L.
     function toMmol(mgdl) {
-        return mgdl * MMOL_PER_MGDL;
+        return mgdl / MGDL_PER_MMOL;
     }
 
     //! Formate une glycemie pour l'affichage.

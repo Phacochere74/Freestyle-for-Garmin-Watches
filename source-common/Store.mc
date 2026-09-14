@@ -22,14 +22,19 @@ module Store {
     const KEY_TOKEN_EXP = "lluTokenExp";
     const KEY_ACCOUNT_ID = "lluAccountId";
     const KEY_REGION = "lluApiRegion";
-    const KEY_PATIENT = "lluPatientId";
+    // Region telle que saisie dans les reglages, distincte de KEY_REGION qui
+    // memorise celle apprise par redirection.
+    const KEY_REGION_SETTING = "lluRegionSetting";
     const KEY_ERROR = "lastError";
-    const KEY_ERROR_TS = "lastErrorTs";
     const KEY_FETCH_TS = "lastFetchTs";
 
-    // 6 h max affichees, une mesure toutes les ~5 min => 72 points + marge.
+    // Deux limites complementaires, chacune dominante dans un cas different :
+    //  - HISTORY_MAX_AGE borne la cadence normale du capteur Libre (une mesure
+    //    toutes les 5 min, soit 84 points sur 7 h) ;
+    //  - HISTORY_MAX protege la memoire face a une source dense : un Nightscout
+    //    alimente par xDrip peut publier une valeur par minute.
+    // Le graphique affiche au maximum 6 h, les deux valeurs laissent de la marge.
     const HISTORY_MAX = 96;
-    // Au-dela de 7 h une mesure ne sert plus au graphique.
     const HISTORY_MAX_AGE = 25200;
 
     function get(key) {
@@ -211,12 +216,13 @@ module Store {
 
     function setRegion(region) { put(KEY_REGION, region); }
 
-    function getPatientId() {
-        var patientId = get(KEY_PATIENT);
-        return (patientId instanceof Lang.String) ? patientId : null;
+    //! Region saisie par l'utilisateur lors du dernier enregistrement des reglages.
+    function getRegionSetting() {
+        var region = get(KEY_REGION_SETTING);
+        return (region instanceof Lang.String) ? region : null;
     }
 
-    function setPatientId(patientId) { put(KEY_PATIENT, patientId); }
+    function setRegionSetting(region) { put(KEY_REGION_SETTING, region); }
 
     //! Invalide la session (mot de passe change, 401, region modifiee...).
     function clearSession() {
@@ -229,7 +235,6 @@ module Store {
 
     function setError(message) {
         put(KEY_ERROR, message);
-        put(KEY_ERROR_TS, Time.now().value());
     }
 
     function getError() {
@@ -294,7 +299,12 @@ module Store {
         for (var i = 1; i < count; i += 1) {
             var current = sorted[i];
             var j = i - 1;
-            while (j >= 0 && sorted[j][0] > current[0]) {
+            // Les points malformes sont filtres a l'ecriture ; ce garde-fou
+            // protege d'un stockage herite d'une version anterieure.
+            if (!(current instanceof Lang.Array) || current.size() < 2) {
+                continue;
+            }
+            while (j >= 0 && sorted[j] instanceof Lang.Array && sorted[j][0] > current[0]) {
                 sorted[j + 1] = sorted[j];
                 j -= 1;
             }
