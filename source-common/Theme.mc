@@ -48,4 +48,17 @@ module Theme {
         var age = Time.now().value() - timestamp;
         return (age < 0) ? 0 : age;
     }
+
+    //! Adapte une couleur a un fond clair.
+    //! Pendant une activite, l'utilisateur peut avoir choisi le theme blanc :
+    //! le jaune et le vert vif deviennent alors illisibles.
+    function adaptToBackground(color, backgroundColor) {
+        if (backgroundColor != Graphics.COLOR_WHITE) {
+            return color;
+        }
+        if (color == Graphics.COLOR_YELLOW) { return Graphics.COLOR_ORANGE; }
+        if (color == Graphics.COLOR_GREEN) { return Graphics.COLOR_DK_GREEN; }
+        if (color == Graphics.COLOR_LT_GRAY) { return Graphics.COLOR_DK_GRAY; }
+        return color;
+    }
 }

@@ -43,6 +43,44 @@ Une source alternative est prévue : **Nightscout**, si tu utilises déjà xDrip
 Juggluco ou un pont LibreLinkUp → Nightscout. C'est l'option la plus fiable des
 deux (API publique, documentée et stable), mais elle suppose un serveur.
 
+### Deux applications
+
+Le dépôt produit **deux applications Connect IQ distinctes**, à installer
+séparément :
+
+| | Où ça s'affiche |
+|---|---|
+| **L'application** (`monkey.jungle`) | Écran complet depuis le menu, plus une *glance* accessible d'un balayage depuis le cadran |
+| **Le champ de données** (`datafield.jungle`) | Dans un écran de données **pendant une activité** (course, vélo, marche) |
+
+Elles partagent le même code (`source-common/`) mais Connect IQ les cloisonne
+totalement&nbsp;: **les identifiants LibreLinkUp sont à saisir dans les réglages
+de chacune.** C'est une contrainte de la plateforme, pas un oubli.
+
+### Où voir ta glycémie, concrètement
+
+| Surface | Disponible | Comment |
+|---|---|---|
+| Écran complet | ✅ | Menu des applications de la montre |
+| **Glance** | ✅ | Un balayage depuis le cadran, sans ouvrir d'application |
+| Champ de données | ✅ | Dans un écran de données, pendant une activité |
+| **Sur ton cadran actuel** | ❌ | Voir ci-dessous |
+
+**Pourquoi pas sur le cadran ?** Garmin propose un mécanisme de *complications*
+Connect IQ — une application publie une valeur, un cadran l'affiche. Mais **les
+cadrans d'origine Garmin n'acceptent pas les complications tierces** ; seuls
+certains cadrans du store Connect IQ les prennent en charge. Deux contournements
+possibles, à implémenter&nbsp;:
+
+- installer un cadran tiers compatible complications, et ajouter la publication
+  de complication à ce projet&nbsp;;
+- ou écrire notre propre cadran affichant la glycémie — il remplacerait alors ton
+  cadran actuel.
+
+En pratique, **la glance couvre déjà le besoin** : un balayage depuis le cadran,
+sans ouvrir d'application, et elle affiche la valeur mise à jour par le service
+en arrière-plan.
+
 ### Fonctionnalités
 
 - Valeur courante en gros caractères, colorée selon tes seuils
@@ -122,10 +160,16 @@ Dans VS Code : `Ctrl/Cmd+Shift+P` → **Monkey C: Build for Device**, choisis ta
 montre, puis copie le `.prg` produit dans `GARMIN/APPS/` de la montre branchée en
 USB. Débranche : l'application apparaît dans la liste.
 
+Attention&nbsp;: la commande **Build for Device** compile le projet sélectionné.
+Pour le champ de données, ouvre `datafield.jungle` avant de lancer la commande
+(ou utilise le script ci-dessous).
+
 En ligne de commande :
 
 ```bash
-tools/build.sh fenix7 developer_key.der
+tools/build.sh app       epix2pro47mm    # l'application
+tools/build.sh datafield epix2pro47mm    # le champ de données
+tools/build.sh both      epix2pro47mm    # les deux
 ```
 
 Pour tester sans montre : **Monkey C: Run App** lance le simulateur (les requêtes
@@ -200,26 +244,37 @@ langue dans `manifest.xml`.
 ## Structure du projet
 
 ```
-manifest.xml                 Identité de l'app, modèles ciblés, permissions
-monkey.jungle                Fichier de projet Connect IQ
-source/
-  FreestyleApp.mc            Point d'entrée : vue, glance, service background
-  MainView.mc                Écran principal (valeur, tendance, courbe)
-  MainDelegate.mc            Boutons / tactile
-  FreestyleGlanceView.mc     Résumé dans la liste des widgets
-  BackgroundService.mc       Rafraîchissement toutes les 5 min
+manifest.xml                 L'application : identité, modèles ciblés, permissions
+manifest-datafield.xml       Le champ de données (identifiant d'app distinct)
+monkey.jungle                Projet Connect IQ de l'application
+datafield.jungle             Projet Connect IQ du champ de données
+
+source-common/               Code partagé par les deux applications
   Fetcher.mc                 Aiguillage entre les sources
   LibreLinkUpClient.mc       Client API LibreLinkUp (login, région, Account-Id)
   NightscoutClient.mc        Client API Nightscout
+  BackgroundService.mc       Rafraîchissement toutes les 5 min
   Store.mc                   Persistance : mesure, historique, session
   Config.mc                  Lecture des réglages
   Fmt.mc                     Unités, dates, formatage
   Net.mc                     Codes d'erreur, SHA-256
   Theme.mc                   Couleurs selon les seuils
   Arrow.mc                   Flèche de tendance dessinée
-resources/                   Chaînes, réglages, propriétés, icône
+
+source-app/                  Spécifique à l'application
+  FreestyleApp.mc            Point d'entrée : vue, glance, service background
+  MainView.mc                Écran principal (valeur, tendance, courbe)
+  MainDelegate.mc            Boutons / tactile
+  FreestyleGlanceView.mc     Résumé dans la liste des raccourcis
+
+source-datafield/            Spécifique au champ de données
+  FreestyleDataFieldApp.mc   Point d'entrée + service background
+  GlucoseDataField.mc        Rendu adaptatif selon la taille allouée
+
+resources/                   Chaînes, réglages, propriétés, icône (partagés)
 tools/build.sh               Compilation en ligne de commande
 tools/make_icon.py           Génération de l'icône de lancement
+docs/demarrage-windows.md    Installation de l'environnement, pas à pas
 docs/api-librelinkup.md      Notes sur l'API et ses sources
 ```
 

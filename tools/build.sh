@@ -1,19 +1,22 @@
 #!/usr/bin/env bash
 #
-# Compilation en ligne de commande.
+# Compilation en ligne de commande des deux applications.
 #
 # Prerequis :
 #   - SDK Connect IQ installe (monkeyc dans le PATH, ou variable CIQ_SDK)
 #   - une cle developpeur au format DER (voir README)
 #
 # Usage :
-#   tools/build.sh                 # compile pour fenix7
-#   tools/build.sh venu2 developer_key.der
+#   tools/build.sh                            # l'app, pour epix2pro47mm
+#   tools/build.sh app epix2pro47mm
+#   tools/build.sh datafield epix2pro47mm
+#   tools/build.sh both epix2pro47mm
 #
 set -euo pipefail
 
-DEVICE="${1:-fenix7}"
-KEY="${2:-developer_key.der}"
+TARGET="${1:-app}"
+DEVICE="${2:-epix2pro47mm}"
+KEY="${3:-developer_key.der}"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 MONKEYC="monkeyc"
@@ -28,18 +31,31 @@ fi
 
 if [[ ! -f "${ROOT}/${KEY}" ]]; then
   echo "Cle developpeur absente : ${ROOT}/${KEY}" >&2
-  echo "Genere-la avec :" >&2
-  echo "  openssl genrsa -out developer_key.pem 4096" >&2
-  echo "  openssl pkcs8 -topk8 -inform PEM -outform DER -in developer_key.pem -out developer_key.der -nocrypt" >&2
+  echo "Genere-la depuis VS Code : Ctrl+Shift+P > Monkey C: Generate a Developer Key" >&2
   exit 1
 fi
 
-mkdir -p "${ROOT}/bin"
-"${MONKEYC}" \
-  --jungles "${ROOT}/monkey.jungle" \
-  --device "${DEVICE}" \
-  --private-key "${ROOT}/${KEY}" \
-  --output "${ROOT}/bin/freestyle-${DEVICE}.prg" \
-  --warn
+build() {
+  local jungle="$1" name="$2"
+  echo "== ${name} -> ${DEVICE}"
+  "${MONKEYC}" \
+    --jungles "${ROOT}/${jungle}" \
+    --device "${DEVICE}" \
+    --private-key "${ROOT}/${KEY}" \
+    --output "${ROOT}/bin/${name}-${DEVICE}.prg" \
+    --warn
+  echo "   OK -> bin/${name}-${DEVICE}.prg"
+}
 
-echo "OK -> bin/freestyle-${DEVICE}.prg"
+mkdir -p "${ROOT}/bin"
+
+case "${TARGET}" in
+  app)       build monkey.jungle    freestyle ;;
+  datafield) build datafield.jungle freestyle-datafield ;;
+  both)      build monkey.jungle    freestyle
+             build datafield.jungle freestyle-datafield ;;
+  *)
+    echo "Cible inconnue : ${TARGET} (attendu : app, datafield ou both)" >&2
+    exit 1
+    ;;
+esac

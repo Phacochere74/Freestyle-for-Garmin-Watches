@@ -1,3 +1,9 @@
-# Fichier de projet Connect IQ.
-# Les sources sont dans source/, les ressources dans resources/.
+# Projet Connect IQ : l'APPLICATION (ecran complet + glance + arriere-plan).
+#
+# Le code est partage avec le champ de donnees :
+#   source-common/    modules communs (reseau, stockage, formatage, couleurs)
+#   source-app/       specifique a l'application
+#
+# Le champ de donnees a son propre fichier de projet : datafield.jungle
 project.manifest = manifest.xml
+base.sourcePath = source-common;source-app

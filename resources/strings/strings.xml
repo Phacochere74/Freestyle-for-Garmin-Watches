@@ -7,6 +7,7 @@
 -->
 <strings>
     <string id="AppName">Freestyle</string>
+    <string id="DataFieldName">Glycemie Freestyle</string>
 
     <string id="SetSource">Source des donnees</string>
     <string id="SetSourcePrompt">LibreLinkUp lit les mesures televersees par l'application FreeStyle Libre 3.</string>

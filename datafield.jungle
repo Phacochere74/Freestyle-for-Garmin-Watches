@@ -1,0 +1,7 @@
+# Projet Connect IQ : le CHAMP DE DONNEES (affiche pendant une activite).
+#
+# Application distincte, avec ses propres reglages et son propre stockage :
+# Connect IQ isole totalement les applications les unes des autres. Les
+# identifiants LibreLinkUp doivent donc etre saisis une seconde fois.
+project.manifest = manifest-datafield.xml
+base.sourcePath = source-common;source-datafield
