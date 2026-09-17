@@ -57,12 +57,20 @@ class NightscoutClient {
         Communications.makeWebRequest(url + "/api/v1/entries/sgv.json", params, options, method(:onEntries));
     }
 
-    function onEntries(responseCode, data) {
+    //! Signature imposee par Communications.ResponseCallback : le verificateur
+    //! de types refuse un callback non type passe a makeWebRequest().
+    function onEntries(responseCode as Lang.Number,
+                       data as Lang.Dictionary or Lang.String or Null) as Void {
         if (responseCode != 200) {
             finish(Net.describeError(responseCode), null);
             return;
         }
-        if (!(data instanceof Lang.Array) || data.size() == 0) {
+        // Nightscout renvoie un tableau JSON a la racine, alors que la signature
+        // imposee au callback ne mentionne que Dictionary ou String. On elargit
+        // donc le type avant le test, sinon le verificateur considere la branche
+        // comme morte et le code du tableau ne serait jamais atteint.
+        var payload = data as Lang.Object;
+        if (!(payload instanceof Lang.Array) || payload.size() == 0) {
             finish("Aucune mesure", null);
             return;
         }
@@ -71,8 +79,8 @@ class NightscoutClient {
         // dans l'historique en ordre croissant.
         var points = [];
         var newest = null;
-        for (var i = data.size() - 1; i >= 0; i -= 1) {
-            var entry = data[i];
+        for (var i = payload.size() - 1; i >= 0; i -= 1) {
+            var entry = payload[i];
             var sgv = Net.asNumber(Net.dictGet(entry, "sgv"));
             if (sgv == null || sgv <= 0) {
                 continue;

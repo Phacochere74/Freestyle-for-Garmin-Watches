@@ -128,7 +128,10 @@ class LibreLinkUpClient {
 
     // ---- Reponses ----------------------------------------------------------
 
-    function onLogin(responseCode, data) {
+    //! Signature imposee par Communications.ResponseCallback : le verificateur
+    //! de types refuse un callback non type passe a makeWebRequest().
+    function onLogin(responseCode as Lang.Number,
+                     data as Lang.Dictionary or Lang.String or Null) as Void {
         if (responseCode != 200 || !(data instanceof Lang.Dictionary)) {
             finish(Net.describeError(responseCode), null);
             return;
@@ -185,7 +188,10 @@ class LibreLinkUpClient {
         requestConnections();
     }
 
-    function onConnections(responseCode, data) {
+    //! Signature imposee par Communications.ResponseCallback : le verificateur
+    //! de types refuse un callback non type passe a makeWebRequest().
+    function onConnections(responseCode as Lang.Number,
+                           data as Lang.Dictionary or Lang.String or Null) as Void {
         if (responseCode == 401 || responseCode == 403) {
             // Jeton refuse : on le jette et on retente une authentification complete.
             Store.clearSession();

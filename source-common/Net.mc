@@ -60,13 +60,13 @@ module Net {
             });
             hasher.update(bytes);
             var digest = hasher.digest();
+            // convertEncodedString renvoie une String : tester sa nullite
+            // rendait le retour suivant inatteignable. Un echec eventuel est
+            // de toute facon rattrape par le catch.
             var hex = StringUtil.convertEncodedString(digest, {
                 :fromRepresentation => StringUtil.REPRESENTATION_BYTE_ARRAY,
                 :toRepresentation => StringUtil.REPRESENTATION_STRING_HEX
             });
-            if (hex == null) {
-                return null;
-            }
             return hex.toLower();
         } catch (e) {
             return null;
