@@ -53,7 +53,9 @@ module Net {
                 :fromRepresentation => StringUtil.REPRESENTATION_STRING_PLAIN_TEXT,
                 :toRepresentation => StringUtil.REPRESENTATION_BYTE_ARRAY
             });
-            var hasher = new Toybox.Cryptography.Hasher({
+            // La classe est Cryptography.Hash (et non Hasher) ; HASH_SHA256 est
+            // le seul algorithme de hachage expose depuis Connect IQ 3.0.
+            var hasher = new Toybox.Cryptography.Hash({
                 :algorithm => Toybox.Cryptography.HASH_SHA256
             });
             hasher.update(bytes);

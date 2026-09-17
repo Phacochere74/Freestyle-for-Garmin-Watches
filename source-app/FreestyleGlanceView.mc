@@ -16,7 +16,8 @@ class FreestyleGlanceView extends WatchUi.GlanceView {
     }
 
     function onUpdate(dc) {
-        var width = dc.getWidth();
+        // La glance occupe toute la largeur disponible : seule la hauteur sert
+        // au placement, les textes sont poses a gauche les uns apres les autres.
         var height = dc.getHeight();
 
         var reading = Store.getReading();
