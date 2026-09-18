@@ -248,6 +248,40 @@ plafonnement de l'historique, couleurs aux bornes exactes des seuils.
 > Garmin. Seule une compilation avec `monkeyc` peut le faire. Le banc vérifie
 > que les **règles de calcul** sont justes — pas que le code compile.
 
+## ⚠️ Configuration d'une application installée manuellement
+
+**N'ouvre pas les réglages de l'application depuis Garmin Connect Mobile :
+ça fait planter la montre.**
+
+Les réglages Connect IQ ne sont modifiables depuis le téléphone que pour les
+applications installées **depuis la boutique** : leurs métadonnées sont
+conservées côté serveur, pas sur la montre. Pour une application chargée
+manuellement, l'entrée apparaît parfois dans Garmin Connect, mais l'ouvrir fait
+planter l'appareil. C'est une limitation connue de Garmin, pas un défaut de
+cette application.
+
+**La solution :** renseigne tes identifiants dans
+`resources/properties/properties.xml` **avant de compiler**. Ils deviennent les
+valeurs par défaut embarquées dans le `.prg`.
+
+```xml
+<property id="lluEmail" type="string">ton.compte.suiveur@exemple.com</property>
+<property id="lluPassword" type="string">tonMotDePasse</property>
+```
+
+C'est du XML : si ton mot de passe contient `&`, `<`, `>`, `"` ou `'`, échappe-les
+(`&amp;`, `&lt;`, `&gt;`, `&quot;`, `&apos;`). Le fichier en-tête du fichier
+rappelle la règle.
+
+Même chose pour les seuils, l'unité d'affichage et la durée du graphique :
+modifie la valeur par défaut, recompile, recopie le `.prg`.
+
+> **Conséquences.** Ton mot de passe se retrouve en clair dans le `.prg` installé
+> sur ta montre et dans ton dossier de projet. Acceptable pour un usage personnel,
+> à condition d'utiliser un compte **suiveur** LibreLinkUp dédié avec un mot de
+> passe unique — jamais celui du compte LibreView principal. Et ne publie jamais
+> le `properties.xml` renseigné.
+
 ## Limites connues, à lire avant de t'en servir
 
 **Le code compile, mais n'a pas encore tourné sur une vraie montre.**

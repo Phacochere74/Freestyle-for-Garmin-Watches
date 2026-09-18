@@ -1,5 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Valeurs par defaut des reglages. Les seuils sont toujours en mg/dL. -->
+<!--
+  Valeurs par defaut des reglages. Les seuils sont toujours en mg/dL.
+
+  ============================================================================
+  INSTALLATION MANUELLE : RENSEIGNE TES IDENTIFIANTS ICI
+  ============================================================================
+
+  Les reglages d'une application Connect IQ ne sont modifiables depuis Garmin
+  Connect Mobile que si elle a ete installee depuis la boutique : les donnees
+  de reglages sont conservees cote serveur, pas sur la montre. Pour une
+  application chargee manuellement (sideload), l'entree existe parfois dans
+  l'application telephone, mais l'ouvrir FAIT PLANTER LA MONTRE. C'est une
+  limitation connue de Garmin, pas un defaut de cette application.
+
+  La solution : inscrire les valeurs ci-dessous AVANT de compiler. Elles
+  deviennent les valeurs par defaut embarquees dans le .prg.
+
+  A renseigner : lluEmail et lluPassword (compte suiveur LibreLinkUp).
+
+  Attention, c'est du XML : si ton mot de passe contient l'un de ces
+  caracteres, il faut l'echapper.
+      &  ->  &amp;        <  ->  &lt;         >  ->  &gt;
+      "  ->  &quot;       '  ->  &apos;
+
+  Ne publie jamais ce fichier une fois renseigne : il contient tes
+  identifiants en clair.
+  ============================================================================
+-->
 <properties>
     <property id="dataSource" type="number">0</property>
 
