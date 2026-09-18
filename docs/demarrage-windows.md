@@ -253,6 +253,8 @@ Appareils → ta montre → Applications Connect IQ → ⚙️ Paramètres**.
 | « No developer key » | Étape 6 non faite, ou chemin de la clé non renseigné dans les réglages de l'extension |
 | L'app se ferme aussitôt sur la montre | Dépassement de mémoire — à diagnostiquer d'abord au simulateur |
 | Compilation OK mais l'app n'apparaît pas | `.prg` copié au mauvais endroit : c'est `GARMIN\APPS`, pas `GARMIN` |
+| « A critical error has occurred » | Option `-r` (build *release*) : elle fait planter le compilateur sur le projet `datafield` avec le SDK 9.2.0. Compile sans `-r` |
+| « Glance applications are not supported for app type 'datafield' » | Avertissement normal : le code partagé porte l'annotation `(:glance)` utile à l'application, que le champ de données ignore. Sans effet |
 
 ---
 

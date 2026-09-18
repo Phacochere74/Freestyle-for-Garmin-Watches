@@ -252,8 +252,13 @@ plafonnement de l'historique, couleurs aux bornes exactes des seuils.
 
 **Le code compile, mais n'a pas encore tourné sur une vraie montre.**
 Compilation vérifiée le 18/09/2026 avec le **SDK Connect IQ 9.2.0** pour
-`epix2pro47mm` : zéro erreur, 20 avertissements de typage sans effet (voir
-ci-dessous). Restent à valider sur l'appareil : la connexion réelle à
+`epix2pro47mm` : **les deux applications compilent**, zéro erreur, avertissements
+de typage sans effet (voir ci-dessous).
+
+> ⚠️ **Ne compile pas avec l'option `-r`** (build *release*) : elle fait planter le
+> compilateur sur le projet `datafield` (« A critical error has occurred »), sans
+> indiquer la cause. Elle est inutile pour une installation manuelle sur la montre.
+> `tools/build.sh` ne l'emploie pas. Restent à valider sur l'appareil : la connexion réelle à
 LibreLinkUp, le rendu à l'écran et la tenue en mémoire du service en
 arrière-plan.
 

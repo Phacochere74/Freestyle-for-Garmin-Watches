@@ -6,6 +6,10 @@
 #   - SDK Connect IQ installe (monkeyc dans le PATH, ou variable CIQ_SDK)
 #   - une cle developpeur au format DER (voir README)
 #
+# NE PAS ajouter l'option -r (build "release") : elle fait planter le
+# compilateur sur le projet datafield avec le SDK 9.2.0 ("A critical error has
+# occurred"). Elle est inutile pour une installation manuelle sur la montre.
+#
 # Usage :
 #   tools/build.sh                            # l'app, pour epix2pro47mm
 #   tools/build.sh app epix2pro47mm
