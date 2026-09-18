@@ -199,8 +199,9 @@ Dans **Garmin Connect Mobile** → *Appareils* → ta montre → *Applications C
 ## Ce qui a été vérifié, et comment
 
 Le SDK Connect IQ n'étant pas disponible dans l'environnement où ce code a été
-écrit, deux garde-fous remplacent la compilation — imparfaitement, mais mieux
-que rien.
+écrit, deux garde-fous ont précédé la compilation — imparfaitement, mais ils ont
+fait le gros du travail : sur ~2 000 lignes jamais compilées, le premier build
+réel n'a remonté que trois erreurs, toutes de nomenclature d'API.
 
 **Une revue de code critique** a été passée sur l'ensemble du projet. Sept
 défauts réels ont été trouvés et corrigés, dont un bloquant :
@@ -214,6 +215,22 @@ défauts réels ont été trouvés et corrigés, dont un bloquant :
 | `http://` accepté comme URL Nightscout | Service en arrière-plan tournant toutes les 5 min pour rien |
 | Région LibreView réapprise à chaque enregistrement des réglages | Allers-retours de redirection inutiles |
 | Champ de données ignorant le réglage d'arrière-plan | Champ figé silencieusement |
+
+**Trois erreurs de compilation** ont été trouvées et corrigées au premier build
+réel — exactement la catégorie que ni la revue ni les tests ne pouvaient
+attraper, faute d'accès à la documentation Garmin depuis l'environnement de
+développement :
+
+| Erreur | Correction |
+|---|---|
+| `Undefined symbol ':Hasher'` | La classe de hachage est `Cryptography.Hash`, pas `Cryptography.Hasher` |
+| Callback refusé par `makeWebRequest` (×3) | `Communications.ResponseCallback` impose une signature typée `(Number, Dictionary or String or Null) as Void` |
+| Branche morte dans `NightscoutClient` | Nightscout renvoie un tableau JSON racine, absent du type imposé au callback |
+
+Il subsiste **20 avertissements** « Cannot determine if container access is using
+container type » : le vérificateur de types ne peut pas prouver le type des
+valeurs lues dans un dictionnaire ou un tableau non annoté. Ils n'empêchent ni
+la compilation ni l'exécution.
 
 **Un banc de test de la logique**, qui transcrit en Python les fonctions pures
 de `source-common/` et les confronte à des cas limites réels :
@@ -233,11 +250,12 @@ plafonnement de l'historique, couleurs aux bornes exactes des seuils.
 
 ## Limites connues, à lire avant de t'en servir
 
-**Le code n'a pas été compilé.** Il a été écrit, relu de façon critique et
-testé sur sa logique (voir la section précédente), mais hors d'un environnement
-disposant du SDK Connect IQ. Attends-toi à devoir corriger quelques erreurs de
-compilation au premier build. C'est la première chose à faire avant de juger le
-reste.
+**Le code compile, mais n'a pas encore tourné sur une vraie montre.**
+Compilation vérifiée le 18/09/2026 avec le **SDK Connect IQ 9.2.0** pour
+`epix2pro47mm` : zéro erreur, 20 avertissements de typage sans effet (voir
+ci-dessous). Restent à valider sur l'appareil : la connexion réelle à
+LibreLinkUp, le rendu à l'écran et la tenue en mémoire du service en
+arrière-plan.
 
 **L'API LibreLinkUp n'est pas publique.** Abbott ne la documente pas et la fait
 évoluer sans préavis : en-tête `version` minimal relevé, en-tête `Account-Id`
