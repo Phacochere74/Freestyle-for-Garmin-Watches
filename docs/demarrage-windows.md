@@ -255,6 +255,7 @@ Appareils → ta montre → Applications Connect IQ → ⚙️ Paramètres**.
 | Compilation OK mais l'app n'apparaît pas | `.prg` copié au mauvais endroit : c'est `GARMIN\APPS`, pas `GARMIN` |
 | « A critical error has occurred » | Option `-r` (build *release*) : elle fait planter le compilateur sur le projet `datafield` avec le SDK 9.2.0. Compile sans `-r` |
 | « Glance applications are not supported for app type 'datafield' » | Avertissement normal : le code partagé porte l'annotation `(:glance)` utile à l'application, que le champ de données ignore. Sans effet |
+| **La montre se fige en ouvrant les réglages depuis Garmin Connect** | Limitation Garmin : impossible pour une application installée manuellement. Renseigne les valeurs dans `resources/properties/properties.xml` **avant** de compiler |
 
 ---
 
