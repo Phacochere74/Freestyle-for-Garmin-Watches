@@ -260,7 +260,21 @@ manuellement, l'entrée apparaît parfois dans Garmin Connect, mais l'ouvrir fai
 planter l'appareil. C'est une limitation connue de Garmin, pas un défaut de
 cette application.
 
-**La solution :** renseigne tes identifiants dans
+**Le plus simple — un script fait tout** (Windows). Depuis le dossier du projet :
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\installer-windows.ps1 -Email "moncompte.suiveur@exemple.com" -Password "monMotDePasse"
+```
+
+Il écrit les identifiants (en gérant l'échappement XML), détecte le SDK et la clé
+développeur, compile, vérifie le `.prg` produit, détecte la montre branchée en USB
+et y copie l'application. Chaque étape affiche `OK` ou `ECHEC` avec sa raison, et
+il s'arrête à la première qui échoue.
+
+Les fois suivantes, les identifiants étant enregistrés, la commande sans argument
+suffit. `-DataField` compile le champ de données, `-NoCopy` compile sans installer.
+
+**À la main**, si tu préfères : renseigne tes identifiants dans
 `resources/properties/properties.xml` **avant de compiler**. Ils deviennent les
 valeurs par défaut embarquées dans le `.prg`.
 
