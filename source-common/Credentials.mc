@@ -31,4 +31,17 @@ module Credentials {
     const LLU_EMAIL = "";
     const LLU_PASSWORD = "";
     // -- FIN DES VALEURS RENSEIGNEES PAR LE SCRIPT --
+
+    // Cadence de rafraichissement quand l'application est OUVERTE, en secondes.
+    // 0 = utiliser le reglage (60 s par defaut).
+    //
+    // Meme raison que pour les identifiants : sur une installation manuelle,
+    // les reglages du telephone sont inutilisables, cette constante est donc
+    // le seul moyen d'ajuster la valeur.
+    //
+    // Descendre sous 60 s n'apporte pratiquement rien : le capteur Libre ne
+    // publie qu'une mesure toutes les 5 minutes. Cela ne fait que reduire le
+    // delai entre la publication et son affichage, au prix de la batterie et
+    // de requetes inutiles vers l'API.
+    const REFRESH_SECONDS = 0;
 }

@@ -27,7 +27,20 @@ class FreestyleDataFieldApp extends Application.AppBase {
         scheduleBackground();
     }
 
+    //! Appele quand le champ est decharge, c'est-a-dire a la fin de l'activite.
+    //! On supprime alors le reveil periodique : hors activite, ce champ n'a
+    //! personne a qui afficher quoi que ce soit. Connect IQ repartit un budget
+    //! de reveils entre les applications qui en demandent ; laisser celui-ci
+    //! tourner en permanence espacait d'autant ceux de l'application.
     function onStop(state) {
+        if (!(Toybox has :Background)) {
+            return;
+        }
+        try {
+            Background.deleteTemporalEvent();
+        } catch (e) {
+            // Rien d'enregistre : sans effet.
+        }
     }
 
     function getInitialView() {

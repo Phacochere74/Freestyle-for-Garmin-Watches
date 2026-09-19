@@ -137,6 +137,11 @@ module Config {
 
     //! Periode de rafraichissement quand l'application est ouverte (secondes).
     function refreshSeconds() {
+        // La constante compilee prime, comme pour les identifiants : les
+        // reglages du telephone sont inutilisables en installation manuelle.
+        if (Credentials.REFRESH_SECONDS > 0) {
+            return clampThreshold(Credentials.REFRESH_SECONDS, 30, 600);
+        }
         var value = numberProp("refreshSeconds", 60);
         if (value < 30) { return 30; }
         if (value > 600) { return 600; }
