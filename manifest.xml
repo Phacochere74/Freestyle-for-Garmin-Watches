@@ -65,6 +65,9 @@
         <iq:permissions>
             <iq:uses-permission id="Communications"/>
             <iq:uses-permission id="Background"/>
+            <!-- Publication de la glycemie comme complication, lisible par les
+                 cadrans qui prennent en charge les complications tierces. -->
+            <iq:uses-permission id="ComplicationPublisher"/>
         </iq:permissions>
 
         <iq:languages>

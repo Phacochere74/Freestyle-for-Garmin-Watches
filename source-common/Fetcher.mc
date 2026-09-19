@@ -57,6 +57,8 @@ class Fetcher {
         if (errorMessage == null && reading != null) {
             Store.clearError();
             Store.saveReading(reading);
+            // Rend la mesure disponible aux cadrans abonnes a la complication.
+            ComplicationPublisher.publish(reading);
         } else {
             Store.setError(errorMessage == null ? "Erreur inconnue" : errorMessage);
         }

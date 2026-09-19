@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Icone de la complication, affichee par les cadrans et par Face It.
+
+  Contraintes Garmin : format SVG obligatoire pour une complication publique,
+  et bonne lisibilite en mode clair comme en mode sombre sur le telephone.
+  D'ou un trait epais et une teinte moyenne, contrastee sur fond blanc comme
+  sur fond noir.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <polyline points="7,35 17,31 27,17 38,11"
+            fill="none" stroke="#2E9E62" stroke-width="6"
+            stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="38" cy="11" r="7" fill="#F0A028"/>
+</svg>

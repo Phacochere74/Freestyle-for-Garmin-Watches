@@ -9,6 +9,12 @@
     <string id="AppName">Freestyle</string>
     <string id="DataFieldName">Glycemie Freestyle</string>
 
+    <!-- Complication : longLabel apparait dans les menus de configuration
+         des cadrans, shortLabel est limite a cinq caracteres. -->
+    <string id="ComplicationLongLabel">Glycemie (Libre 3)</string>
+    <string id="ComplicationShortLabel">GLUC</string>
+    <string id="ComplicationFaceItName">Glycemie</string>
+
     <string id="SetSource">Source des donnees</string>
     <string id="SetSourcePrompt">LibreLinkUp lit les mesures televersees par l'application FreeStyle Libre 3.</string>
     <string id="SourceLibreLinkUp">LibreLinkUp</string>

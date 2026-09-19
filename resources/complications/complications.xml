@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Declaration de la complication publiee par l'application.
+
+  id           0 a 255, A GARDER STABLE : le modifier romprait l'abonnement des
+               cadrans qui l'utilisent deja.
+  access       public pour que n'importe quel cadran du store, et Face It,
+               puissent l'afficher. En private, seules nos propres applications
+               y auraient acces, ce qui n'aurait aucun interet ici.
+  icon         obligatoire, et au format SVG puisque l'acces est public.
+  faceIt       element obligatoire : le nom affiche dans Face It.
+  range        bornes indicatives. Elles sont republiees a l'execution dans
+               l'unite choisie par l'utilisateur (voir ComplicationPublisher).
+-->
+<complications>
+    <complication id="0"
+                  access="public"
+                  longLabel="@Strings.ComplicationLongLabel"
+                  shortLabel="@Strings.ComplicationShortLabel"
+                  icon="@Drawables.ComplicationIcon"
+                  glancePreview="true">
+        <faceIt defaultText="@Strings.ComplicationFaceItName"/>
+        <range>
+            <value>40</value>
+            <value>70</value>
+            <value>180</value>
+            <value>250</value>
+            <value>400</value>
+        </range>
+    </complication>
+</complications>
