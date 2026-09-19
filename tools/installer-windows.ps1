@@ -43,7 +43,7 @@ function Abandon($texte) {
 Etape "Localisation du projet"
 
 $racine = Split-Path -Parent $PSScriptRoot
-$props  = Join-Path $racine "resources\properties\properties.xml"
+$creds  = Join-Path $racine "source-common\Credentials.mc"
 
 if ($DataField) {
     $nomJungle = "datafield.jungle"
@@ -56,7 +56,7 @@ $jungle = Join-Path $racine $nomJungle
 $binDir = Join-Path $racine "bin"
 $sortie = Join-Path $binDir $nomPrg
 
-if (-not (Test-Path $props))  { Abandon "properties.xml introuvable. Ce script doit rester dans le dossier tools du projet." }
+if (-not (Test-Path $creds))  { Abandon "Credentials.mc introuvable. Ce script doit rester dans le dossier tools du projet." }
 if (-not (Test-Path $jungle)) { Abandon "$nomJungle introuvable dans $racine" }
 Bon $racine
 
@@ -104,25 +104,40 @@ Bon $cle
 
 # ---------------------------------------------------------- 5. Identifiants
 Etape "Identifiants LibreLinkUp"
-
-[xml] $xml = Get-Content -Path $props -Encoding UTF8
-$champEmail = $xml.properties.property | Where-Object { $_.id -eq "lluEmail" }
-$champMdp   = $xml.properties.property | Where-Object { $_.id -eq "lluPassword" }
-if ($null -eq $champEmail -or $null -eq $champMdp) { Abandon "lluEmail ou lluPassword absent de properties.xml" }
+Info "ecrits dans le code : la montre conserve sinon les reglages du 1er lancement"
 
 if ($Email -ne "" -or $Password -ne "") {
-    if ($Email -ne "")    { $champEmail.InnerText = $Email }
-    if ($Password -ne "") { $champMdp.InnerText   = $Password }
-    $xml.Save($props)
-    Info "properties.xml mis a jour, echappement XML pris en charge automatiquement"
+    # Echappement Monkey C : l'antislash d'abord, sinon on echapperait
+    # les antislash que l'on vient d'introduire.
+    # En PowerShell, le motif est une regex mais le remplacement est litteral :
+    #   motif '\\' = un antislash, remplacement '\\' = deux antislashes.
+    $emailEch = $Email    -replace '\\', '\\' -replace '"', '\"'
+    $mdpEch   = $Password -replace '\\', '\\' -replace '"', '\"'
 
-    [xml] $xml = Get-Content -Path $props -Encoding UTF8
-    $champEmail = $xml.properties.property | Where-Object { $_.id -eq "lluEmail" }
-    $champMdp   = $xml.properties.property | Where-Object { $_.id -eq "lluPassword" }
+    $sortieLignes = @()
+    foreach ($ligne in (Get-Content -Path $creds)) {
+        if ($Email -ne "" -and $ligne -match '^\s*const LLU_EMAIL\s*=') {
+            $sortieLignes += ('    const LLU_EMAIL = "' + $emailEch + '";')
+        } elseif ($Password -ne "" -and $ligne -match '^\s*const LLU_PASSWORD\s*=') {
+            $sortieLignes += ('    const LLU_PASSWORD = "' + $mdpEch + '";')
+        } else {
+            $sortieLignes += $ligne
+        }
+    }
+    # UTF-8 sans BOM : le compilateur Monkey C n'apprecie pas la marque d'ordre.
+    $encodage = New-Object System.Text.UTF8Encoding $false
+    [System.IO.File]::WriteAllLines($creds, $sortieLignes, $encodage)
+    Info "Credentials.mc mis a jour, echappement pris en charge"
 }
 
-$emailLu = [string] $champEmail.InnerText
-$mdpLu   = [string] $champMdp.InnerText
+$emailLu = ""
+$mdpLu    = ""
+foreach ($ligne in (Get-Content -Path $creds)) {
+    if ($ligne -match '^\s*const LLU_EMAIL\s*=\s*"(.*)"\s*;')    { $emailLu = $matches[1] }
+    if ($ligne -match '^\s*const LLU_PASSWORD\s*=\s*"(.*)"\s*;') { $mdpLu   = $matches[1] }
+}
+if ($Email -ne "")    { $emailLu = $Email }
+if ($Password -ne "") { $mdpLu   = $Password }
 
 if ($emailLu.Trim() -eq "" -or $mdpLu.Trim() -eq "") {
     Abandon "Identifiants vides. Relance en ajoutant : -Email `"...`" -Password `"...`""

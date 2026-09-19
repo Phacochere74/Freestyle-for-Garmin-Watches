@@ -70,8 +70,26 @@ module Config {
         return (src == SOURCE_NIGHTSCOUT) ? SOURCE_NIGHTSCOUT : SOURCE_LIBRELINKUP;
     }
 
-    function lluEmail() { return stringProp("lluEmail"); }
-    function lluPassword() { return stringProp("lluPassword"); }
+    //! Identifiants du compte suiveur LibreLinkUp.
+    //!
+    //! Les constantes de Credentials, quand elles sont renseignees, sont
+    //! PRIORITAIRES sur les reglages memorises par la montre. C'est
+    //! indispensable pour une installation manuelle : la montre conserve les
+    //! valeurs enregistrees au premier lancement, et l'ecran de reglages du
+    //! telephone n'est pas utilisable dans ce cas.
+    function lluEmail() {
+        if (Credentials.LLU_EMAIL.length() > 0) {
+            return Credentials.LLU_EMAIL;
+        }
+        return stringProp("lluEmail");
+    }
+
+    function lluPassword() {
+        if (Credentials.LLU_PASSWORD.length() > 0) {
+            return Credentials.LLU_PASSWORD;
+        }
+        return stringProp("lluPassword");
+    }
 
     //! Region LibreView : "eu", "us", "de", "fr", "jp", "ap", "au", "ca"...
     //! Sert a construire https://api-<region>.libreview.io

@@ -275,17 +275,25 @@ Les fois suivantes, les identifiants étant enregistrés, la commande sans argum
 suffit. `-DataField` compile le champ de données, `-NoCopy` compile sans installer.
 
 **À la main**, si tu préfères : renseigne tes identifiants dans
-`resources/properties/properties.xml` **avant de compiler**. Ils deviennent les
-valeurs par défaut embarquées dans le `.prg`.
+`source-common/Credentials.mc` **avant de compiler**.
 
-```xml
-<property id="lluEmail" type="string">ton.compte.suiveur@exemple.com</property>
-<property id="lluPassword" type="string">tonMotDePasse</property>
+```monkeyc
+const LLU_EMAIL = "ton.compte.suiveur@exemple.com";
+const LLU_PASSWORD = "tonMotDePasse";
 ```
 
-C'est du XML : si ton mot de passe contient `&`, `<`, `>`, `"` ou `'`, échappe-les
-(`&amp;`, `&lt;`, `&gt;`, `&quot;`, `&apos;`). Le fichier en-tête du fichier
-rappelle la règle.
+Si ton mot de passe contient un antislash ou un guillemet, double-les :
+`\` → `\\`, `"` → `\"`.
+
+> **Pourquoi pas `properties.xml` ?** Parce que ça ne marche pas sur une
+> installation manuelle. Connect IQ mémorise les réglages **sur la montre**,
+> indexés par identifiant d'application : les valeurs vides enregistrées au
+> premier lancement gagnent contre les nouvelles valeurs par défaut d'un `.prg`
+> recompilé. Les constantes de `Credentials.mc` sont donc prioritaires sur les
+> réglages mémorisés — ce que tu compiles est ce qui s'exécute.
+>
+> Laisse-les vides pour une installation depuis la boutique : les réglages du
+> téléphone reprennent alors la main.
 
 Même chose pour les seuils, l'unité d'affichage et la durée du graphique :
 modifie la valeur par défaut, recompile, recopie le `.prg`.
@@ -294,7 +302,7 @@ modifie la valeur par défaut, recompile, recopie le `.prg`.
 > sur ta montre et dans ton dossier de projet. Acceptable pour un usage personnel,
 > à condition d'utiliser un compte **suiveur** LibreLinkUp dédié avec un mot de
 > passe unique — jamais celui du compte LibreView principal. Et ne publie jamais
-> le `properties.xml` renseigné.
+> le `Credentials.mc` renseigné.
 
 ## Limites connues, à lire avant de t'en servir
 
