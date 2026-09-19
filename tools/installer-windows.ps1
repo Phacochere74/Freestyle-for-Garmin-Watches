@@ -187,10 +187,26 @@ foreach ($lecteur in $lecteurs) {
 }
 
 if ($dossierApps -eq "") {
-    Write-Host "   ECHEC   aucun appareil Garmin detecte" -ForegroundColor Red
-    Info "Branche la montre en USB, attends que Windows affiche le lecteur, relance."
-    Info "Le fichier est pret : $sortie"
-    exit 1
+    # Les montres recentes (Epix Pro, Fenix 8...) se montent en MTP, comme un
+    # telephone : elles apparaissent sous "Ce PC" mais SANS lettre de lecteur.
+    # Windows ne permet pas de copier vers un peripherique MTP en ligne de
+    # commande de maniere fiable ; la copie se fait donc a la main.
+    Write-Host "   A FAIRE  copie manuelle" -ForegroundColor Yellow
+    Info "Aucun lecteur Garmin avec une lettre (D:, E:...) n'a ete trouve."
+    Info "C'est normal sur les montres recentes : elles se montent en MTP."
+    Info ""
+    Info "L'explorateur Windows va s'ouvrir sur le fichier compile."
+    Info "Glisse-le dans :  Ce PC > [ta montre] > Internal Storage > GARMIN > Apps"
+    Info "Puis ejecte la montre, debranche, laisse-la redemarrer."
+    Info ""
+    Info "Fichier : $sortie"
+
+    $argument = '/select,"' + $sortie + '"'
+    Start-Process -FilePath "explorer.exe" -ArgumentList $argument
+
+    Write-Host ""
+    Write-Host "Compilation terminee. Il ne reste que la copie." -ForegroundColor Green
+    exit 0
 }
 Bon $dossierApps
 
