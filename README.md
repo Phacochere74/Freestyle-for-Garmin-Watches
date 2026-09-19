@@ -53,9 +53,11 @@ séparément :
 | **L'application** (`monkey.jungle`) | Écran complet depuis le menu, plus une *glance* accessible d'un balayage depuis le cadran |
 | **Le champ de données** (`datafield.jungle`) | Dans un écran de données **pendant une activité** (course, vélo, marche) |
 
-Elles partagent le même code (`source-common/`) mais Connect IQ les cloisonne
-totalement&nbsp;: **les identifiants LibreLinkUp sont à saisir dans les réglages
-de chacune.** C'est une contrainte de la plateforme, pas un oubli.
+Elles partagent le même code (`source-common/`), **identifiants compris** :
+`Credentials.mc` étant dans le code commun, le champ de données est configuré
+d'office dès que l'application l'est. Chacune interroge LibreLinkUp de son côté,
+avec son propre service en arrière-plan — Connect IQ cloisonne le stockage de
+chaque application.
 
 ### Où voir ta glycémie, concrètement
 
