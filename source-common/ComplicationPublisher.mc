@@ -79,7 +79,9 @@ module ComplicationPublisher {
     }
 
     //! Convertit un seuil en mg/dL vers l'unite d'affichage.
-    hidden function echelle(mgdl, mmol) {
+    //! Pas de 'hidden' ici : ce modificateur est reserve aux membres de classe,
+    //! il est refuse dans un module.
+    function echelle(mgdl, mmol) {
         if (mmol) {
             return Fmt.toMmol(mgdl.toFloat());
         }
