@@ -6,10 +6,10 @@
 // Le champ se contente donc d'afficher ce que le service a depose dans
 // Application.Storage, et le service fait le travail toutes les 5 minutes.
 //
-// C'est aussi une application distincte de l'app principale : Connect IQ
-// cloisonne les reglages et le stockage de chaque application. Les identifiants
-// LibreLinkUp doivent donc etre saisis une seconde fois, dans les reglages de
-// ce champ de donnees.
+// C'est une application distincte de l'app principale : Connect IQ cloisonne le
+// stockage de chacune, ce champ tient donc son propre historique et fait ses
+// propres requetes. Les identifiants, eux, sont partages : ils viennent de
+// source-common/Credentials.mc, compile dans les deux applications.
 //
 using Toybox.Application;
 using Toybox.Background;

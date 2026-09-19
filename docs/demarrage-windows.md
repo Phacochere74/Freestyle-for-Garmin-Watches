@@ -233,10 +233,10 @@ Le débogueur (points d'arrêt, inspection des variables) fonctionne aussi, via
 Les réglages se font depuis le téléphone : **Garmin Connect Mobile →
 Appareils → ta montre → Applications Connect IQ → ⚙️ Paramètres**.
 
-> **Les deux applications ont des réglages séparés.** Connect IQ cloisonne
-> totalement les applications : tes identifiants LibreLinkUp sont à saisir une
-> fois pour l'app, une fois pour le champ de données. C'est une contrainte de la
-> plateforme.
+> **Un seul jeu d'identifiants.** Ils sont compilés dans
+> `source-common/Credentials.mc`, partagé par les deux applications : le champ de
+> données est configuré d'office. Seul le stockage des mesures reste cloisonné par
+> Connect IQ, chacune interrogeant LibreLinkUp de son côté.
 
 > Une application chargée en sideload n'est pas signée par le store : c'est normal,
 > elle fonctionne exactement pareil. Elle n'est simplement visible que par toi.
