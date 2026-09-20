@@ -194,6 +194,13 @@ class MainView extends WatchUi.View {
             if (error != null) {
                 text = error;
                 color = Graphics.COLOR_ORANGE;
+            } else if (Config.backgroundEnabled() && !Wake.isRegistered()) {
+                // Sans evenement temporel enregistre, la glance, le champ de
+                // donnees et la complication ne sont plus alimentes : seule
+                // l'ouverture de cet ecran declenche encore une requete. On le
+                // dit au lieu de laisser croire a un simple retard.
+                text = "Reveil non programme";
+                color = Graphics.COLOR_ORANGE;
             } else {
                 // On affiche l'age du dernier RELEVE reussi, distinct de l'age
                 // de la mesure affiche en bas. Les deux ensemble disent si

@@ -10,9 +10,7 @@
 // embarquer dans quel binaire.
 //
 using Toybox.Application;
-using Toybox.Background;
 using Toybox.Lang;
-using Toybox.Time;
 using Toybox.WatchUi;
 
 class FreestyleApp extends Application.AppBase {
@@ -21,8 +19,11 @@ class FreestyleApp extends Application.AppBase {
         AppBase.initialize();
     }
 
+    //! onStart() est appele dans TOUS les contextes : application, glance et
+    //! service en arriere-plan. Wake.schedule() est idempotent, c'est ce qui
+    //! rend cet appel inoffensif ici (voir source-common/Wake.mc).
     function onStart(state) {
-        scheduleBackground();
+        Wake.schedule();
     }
 
     function onStop(state) {
@@ -74,25 +75,8 @@ class FreestyleApp extends Application.AppBase {
             Store.setRegion(configuredRegion);
         }
         Store.clearError();
-        scheduleBackground();
+        Wake.schedule();
         WatchUi.requestUpdate();
     }
 
-    //! (Re)programme ou supprime le reveil periodique du service background.
-    hidden function scheduleBackground() {
-        if (!(Toybox has :Background)) {
-            return;
-        }
-        try {
-            if (Config.backgroundEnabled() && Config.isConfigured()) {
-                // 5 minutes est le minimum autorise par Connect IQ, et
-                // correspond a la cadence de publication du capteur Libre.
-                Background.registerForTemporalEvent(new Time.Duration(300));
-            } else {
-                Background.deleteTemporalEvent();
-            }
-        } catch (e) {
-            // Appareil sans support background ou quota atteint : sans effet.
-        }
-    }
 }

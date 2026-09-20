@@ -12,9 +12,7 @@
 // source-common/Credentials.mc, compile dans les deux applications.
 //
 using Toybox.Application;
-using Toybox.Background;
 using Toybox.Lang;
-using Toybox.Time;
 using Toybox.WatchUi;
 
 class FreestyleDataFieldApp extends Application.AppBase {
@@ -24,7 +22,7 @@ class FreestyleDataFieldApp extends Application.AppBase {
     }
 
     function onStart(state) {
-        scheduleBackground();
+        Wake.schedule();
     }
 
     //! NE PAS supprimer ici le reveil periodique.
@@ -69,27 +67,8 @@ class FreestyleDataFieldApp extends Application.AppBase {
             Store.setRegion(configuredRegion);
         }
         Store.clearError();
-        scheduleBackground();
+        Wake.schedule();
         WatchUi.requestUpdate();
     }
 
-    hidden function scheduleBackground() {
-        if (!(Toybox has :Background)) {
-            return;
-        }
-        try {
-            // Meme condition que l'application : sans ce test, desactiver la mise
-            // a jour en arriere-plan laisserait un evenement programme dont le
-            // service ressort immediatement, figeant le champ en silence.
-            if (Config.backgroundEnabled() && Config.isConfigured()) {
-                // 5 minutes : minimum autorise par Connect IQ, et cadence de
-                // publication du capteur Libre.
-                Background.registerForTemporalEvent(new Time.Duration(300));
-            } else {
-                Background.deleteTemporalEvent();
-            }
-        } catch (e) {
-            // Appareil sans support background : le champ affichera "--".
-        }
-    }
 }
