@@ -25,6 +25,11 @@ class BackgroundService extends System.ServiceDelegate {
     }
 
     function onTemporalEvent() {
+        // Dater le reveil AVANT tout test de configuration : ce qu'on mesure
+        // ici, c'est que la plateforme nous reveille bien, pas que la requete
+        // aboutisse. Wake.isStale() s'appuie sur cette date.
+        Store.markWakeRun();
+
         if (!Config.backgroundEnabled() || !Config.isConfigured()) {
             exitOnce(null);
             return;

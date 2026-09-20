@@ -1,9 +1,9 @@
 //
-// Wake - programmation du reveil periodique du service en arriere-plan.
+// Wake - programmation et surveillance du reveil periodique.
 //
 // Trois regles de la plateforme Connect IQ gouvernent ce fichier :
 //
-//   1. Une seule application peut enregistrer UN SEUL evenement temporel.
+//   1. Une application ne peut enregistrer QU'UN SEUL evenement temporel.
 //   2. registerForTemporalEvent() ECRASE l'enregistrement precedent. Le compte
 //      a rebours repart donc de zero a chaque appel.
 //   3. Un evenement enregistre avec une Duration SE REPETE tout seul. Il n'y a
@@ -12,10 +12,13 @@
 // La version precedente appelait registerForTemporalEvent() depuis onStart(),
 // qui s'execute dans TOUS les contextes : ouverture de l'application, affichage
 // de la glance dans le carrousel, et execution du service lui-meme. Chacun de
-// ces evenements repoussait donc le reveil suivant de 5 minutes supplementaires
-// (regle 2), alors qu'il n'y avait rien a reprogrammer (regle 3).
+// ces evenements repoussait le reveil suivant de 5 minutes (regle 2), alors
+// qu'il n'y avait rien a reprogrammer (regle 3).
 //
-// D'ou la regle tenue ici : on n'enregistre que s'il n'y a RIEN d'enregistre.
+// D'ou les deux regles tenues ici :
+//   - on n'enregistre que s'il n'y a RIEN d'enregistre ;
+//   - on ne se fie pas a l'enregistrement : on verifie qu'il produit vraiment
+//     des reveils, et on le refait une fois s'il est reste muet trop longtemps.
 //
 using Toybox.Background;
 using Toybox.Time;
@@ -27,15 +30,23 @@ module Wake {
     // capteur Libre. Descendre plus bas fait echouer l'enregistrement.
     const PERIOD_SECONDS = 300;
 
-    //! Etat du reveil periodique, lu en direct sur la plateforme.
+    // Au-dela de 4 periodes sans aucun reveil, on considere l'enregistrement
+    // perdu (redemarrage de la montre, mise a jour du logiciel, reinstallation)
+    // et on le refait. Marge volontairement large : la montre a le droit de
+    // retarder un reveil, et refaire l'enregistrement coute jusqu'a 5 minutes
+    // de decalage supplementaire. Le controle ne peut se declencher qu'une fois
+    // par periode de silence, puisque markWakeRegistered() repousse l'echeance.
+    const STALE_SECONDS = 1200;
+
+    //! Etat du reveil, lu en direct sur la plateforme.
     //! @return true si un evenement temporel est enregistre pour cette application
     function isRegistered() {
         if (!(Toybox has :Background)) {
             return false;
         }
         if (!(Background has :getTemporalEventRegisteredTime)) {
-            // API anterieure a Connect IQ 2.x : impossible de savoir. On repond
-            // false, ce qui ramene au comportement historique (reenregistrement).
+            // API trop ancienne pour savoir : on repond false, ce qui ramene au
+            // comportement historique (reenregistrement).
             return false;
         }
         try {
@@ -45,41 +56,75 @@ module Wake {
         }
     }
 
-    //! Met le reveil periodique en accord avec les reglages.
-    //! Idempotent : n'ecrase JAMAIS un enregistrement deja en place.
+    //! true si le service est enregistre mais n'a produit aucun reveil depuis
+    //! STALE_SECONDS. Sert aussi a l'affichage de diagnostic.
+    function isStale() {
+        if (!isRegistered()) {
+            return false;
+        }
+        // Date de reference : le dernier reveil reel, ou a defaut la date
+        // d'enregistrement tant qu'aucun reveil n'a encore eu lieu.
+        var reference = Store.getLastWakeRun();
+        if (reference == null) {
+            reference = Store.getWakeSince();
+        }
+        if (reference == null) {
+            return false;
+        }
+        return (Time.now().value() - reference) > STALE_SECONDS;
+    }
+
+    //! Met le reveil en accord avec les reglages, et le repare s'il est mort.
+    //! Idempotent : n'ecrase jamais un enregistrement qui fonctionne.
     //! @return true si un reveil est programme quand la fonction rend la main
     function schedule() {
         if (!(Toybox has :Background)) {
             return false;
         }
 
-        var registered = isRegistered();
-        var wanted = Config.backgroundEnabled() && Config.isConfigured();
-
-        if (!wanted) {
-            if (registered) {
+        if (!(Config.backgroundEnabled() && Config.isConfigured())) {
+            if (isRegistered()) {
                 try {
                     Background.deleteTemporalEvent();
                 } catch (e) {
-                    // Rien a faire : l'evenement restera, le service ressortira
-                    // immediatement puisque onTemporalEvent reteste la config.
+                    // L'evenement restera ; onTemporalEvent reteste la config
+                    // et ressortira immediatement. Sans consequence.
                 }
             }
+            Store.clearWakeSince();
             return false;
         }
 
-        if (registered) {
-            // Deja programme. Reenregistrer relancerait le compte a rebours.
-            return true;
+        if (!isRegistered()) {
+            return register();
         }
 
+        if (isStale()) {
+            try {
+                Background.deleteTemporalEvent();
+            } catch (e) {
+            }
+            return register();
+        }
+
+        // Enregistre et vivant : surtout ne rien faire (regles 2 et 3).
+        if (Store.getWakeSince() == null) {
+            // Enregistrement herite d'une version anterieure : on date le
+            // point de depart de la surveillance, sans toucher a l'evenement.
+            Store.markWakeRegistered();
+        }
+        return true;
+    }
+
+    //! Enregistre l'evenement repetitif et date l'operation.
+    function register() {
         try {
             Background.registerForTemporalEvent(new Time.Duration(PERIOD_SECONDS));
+            Store.markWakeRegistered();
             return true;
         } catch (e) {
-            // Refus le plus probable : moins de 5 minutes se sont ecoulees
-            // depuis le dernier evenement temporel. Le prochain passage dans
-            // schedule() reessaiera.
+            // Refus le plus probable : moins de 5 minutes depuis le dernier
+            // evenement temporel. Le prochain passage reessaiera.
             return false;
         }
     }

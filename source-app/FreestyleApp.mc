@@ -52,6 +52,10 @@ class FreestyleApp extends Application.AppBase {
             if (reading instanceof Lang.Dictionary) {
                 Store.saveReading(reading);
                 Store.clearError();
+                // Republication ici aussi : la publication faite depuis le
+                // service en arriere-plan peut etre refusee selon le contexte
+                // d'execution, celle-ci a lieu dans l'application elle-meme.
+                ComplicationPublisher.publish(reading);
             }
             var errorMessage = data["e"];
             if (errorMessage instanceof Lang.String) {

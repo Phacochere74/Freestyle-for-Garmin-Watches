@@ -201,6 +201,11 @@ class MainView extends WatchUi.View {
                 // dit au lieu de laisser croire a un simple retard.
                 text = "Reveil non programme";
                 color = Graphics.COLOR_ORANGE;
+            } else if (Config.backgroundEnabled() && Wake.isStale()) {
+                // Enregistre, mais la montre ne nous reveille plus. Wake a
+                // deja tente la reparation au demarrage ; on le signale.
+                text = "Reveil en echec";
+                color = Graphics.COLOR_ORANGE;
             } else {
                 // On affiche l'age du dernier RELEVE reussi, distinct de l'age
                 // de la mesure affiche en bas. Les deux ensemble disent si

@@ -353,6 +353,83 @@ check("181 -> jaune", color_for_value(181), "JAUNE")
 check("249 -> jaune", color_for_value(249), "JAUNE")
 check("250 = seuil hyper severe -> rouge", color_for_value(250), "ROUGE")
 
+# --------------------------------------------------------------------------
+# Transcription de source-common/Wake.mc
+# --------------------------------------------------------------------------
+
+WAKE_PERIOD = 300
+WAKE_STALE = 1200
+
+
+def wake_is_stale(registered, last_run, wake_since, now):
+    """Transcription de Wake.isStale()."""
+    if not registered:
+        return False
+    reference = last_run
+    if reference is None:
+        reference = wake_since
+    if reference is None:
+        return False
+    return (now - reference) > WAKE_STALE
+
+
+def wake_schedule(registered, wanted, last_run, wake_since, now):
+    """Transcription de Wake.schedule().
+
+    Renvoie (action, programme) ou action vaut "supprime", "enregistre",
+    "reenregistre" ou "rien". C'est l'ACTION qui compte : le defaut corrige
+    etait precisement un "enregistre" la ou il fallait "rien".
+    """
+    if not wanted:
+        return ("supprime" if registered else "rien", False)
+    if not registered:
+        return ("enregistre", True)
+    if wake_is_stale(registered, last_run, wake_since, now):
+        return ("reenregistre", True)
+    return ("rien", True)
+
+
+print("\n[9] Machine a etats du reveil periodique (Wake.mc)")
+NOW = 1_700_000_000
+
+# Le defaut corrige : une application deja enregistree et vivante ne doit
+# JAMAIS reenregistrer, sinon le compte a rebours de 5 min repart a zero.
+check("ouverture de l'app, reveil vivant -> ne touche a rien",
+      wake_schedule(True, True, NOW - 60, NOW - 3600, NOW), ("rien", True))
+check("passage sur la glance, reveil vivant -> ne touche a rien",
+      wake_schedule(True, True, NOW - 280, NOW - 7200, NOW), ("rien", True))
+check("service en arriere-plan qui demarre -> ne touche a rien",
+      wake_schedule(True, True, NOW - WAKE_PERIOD, NOW - 7200, NOW), ("rien", True))
+
+# Premier demarrage et reinstallation.
+check("rien d'enregistre -> enregistre",
+      wake_schedule(False, True, None, None, NOW), ("enregistre", True))
+check("enregistre mais aucun reveil encore eu lieu, juste apres -> rien",
+      wake_schedule(True, True, None, NOW - 120, NOW), ("rien", True))
+
+# Reparation : bornes exactes de STALE_SECONDS.
+check("silence de 1200 s pile -> pas encore considere mort",
+      wake_schedule(True, True, NOW - WAKE_STALE, NOW - 7200, NOW), ("rien", True))
+check("silence de 1201 s -> reenregistre",
+      wake_schedule(True, True, NOW - WAKE_STALE - 1, NOW - 7200, NOW),
+      ("reenregistre", True))
+check("enregistrement perdu sans aucun reveil depuis 25 min -> reenregistre",
+      wake_schedule(True, True, None, NOW - 1500, NOW), ("reenregistre", True))
+check("enregistrement herite, aucune date connue -> ne repare pas a l'aveugle",
+      wake_schedule(True, True, None, None, NOW), ("rien", True))
+
+# Desactivation.
+check("arriere-plan desactive alors qu'il tournait -> supprime",
+      wake_schedule(True, False, NOW - 60, NOW - 3600, NOW), ("supprime", False))
+check("arriere-plan desactive et rien d'enregistre -> rien",
+      wake_schedule(False, False, None, None, NOW), ("rien", False))
+
+# La date de reference doit etre celle du SERVICE, pas celle d'une requete
+# au premier plan : c'est toute la raison d'etre de la cle separee.
+check("requete au premier plan recente mais service muet -> reenregistre",
+      wake_schedule(True, True, NOW - 1800, NOW - 7200, NOW),
+      ("reenregistre", True))
+
 print("\n" + "=" * 74)
 if FAILURES:
     print("%d test(s) en echec : %s" % (len(FAILURES), ", ".join(FAILURES)))

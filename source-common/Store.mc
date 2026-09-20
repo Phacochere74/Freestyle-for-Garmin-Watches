@@ -27,6 +27,9 @@ module Store {
     const KEY_REGION_SETTING = "lluRegionSetting";
     const KEY_ERROR = "lastError";
     const KEY_FETCH_TS = "lastFetchTs";
+    // Surveillance du reveil periodique (voir source-common/Wake.mc).
+    const KEY_WAKE_SINCE = "wakeSince";     // date du dernier enregistrement
+    const KEY_WAKE_RUN = "wakeLastRun";     // date du dernier reveil effectif
 
     // Deux limites complementaires, chacune dominante dans un cas different :
     //  - HISTORY_MAX_AGE borne la cadence normale du capteur Libre (une mesure
@@ -250,6 +253,31 @@ module Store {
 
     function getLastFetch() {
         var timestamp = get(KEY_FETCH_TS);
+        return (timestamp instanceof Lang.Number) ? timestamp : null;
+    }
+
+    // ---- Surveillance du reveil periodique ---------------------------------
+    //
+    // Deux dates distinctes, et c'est volontaire : getLastFetch() est mis a jour
+    // par TOUTE requete, y compris celles de l'ecran principal au premier plan.
+    // Elle ne dit donc rien de la sante du service en arriere-plan. Ces deux
+    // cles-ci ne parlent que de lui.
+
+    //! Date a laquelle l'evenement temporel a ete enregistre.
+    function markWakeRegistered() { put(KEY_WAKE_SINCE, Time.now().value()); }
+
+    function getWakeSince() {
+        var timestamp = get(KEY_WAKE_SINCE);
+        return (timestamp instanceof Lang.Number) ? timestamp : null;
+    }
+
+    function clearWakeSince() { put(KEY_WAKE_SINCE, null); }
+
+    //! Date du dernier declenchement reel du service en arriere-plan.
+    function markWakeRun() { put(KEY_WAKE_RUN, Time.now().value()); }
+
+    function getLastWakeRun() {
+        var timestamp = get(KEY_WAKE_RUN);
         return (timestamp instanceof Lang.Number) ? timestamp : null;
     }
 
