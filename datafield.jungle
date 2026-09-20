@@ -5,3 +5,6 @@
 # puisque source-common/Credentials.mc est compile dans les deux.
 project.manifest = manifest-datafield.xml
 base.sourcePath = source-common;source-datafield
+
+# Pas de base.resourcePath ici : le defaut (resources) suffit. Le champ de
+# donnees ne doit surtout pas voir resources-app, qui declare la complication.

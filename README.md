@@ -387,7 +387,9 @@ source-datafield/            Spécifique au champ de données
   FreestyleDataFieldApp.mc   Point d'entrée + service background
   GlucoseDataField.mc        Rendu adaptatif selon la taille allouée
 
-resources/                   Chaînes, réglages, propriétés, icône (partagés)
+resources/                   Chaînes, réglages, propriétés, icônes (partagés)
+resources-app/               Ressources de l'application seule
+  complications/             Déclaration de la complication publiée
 tools/build.sh               Compilation en ligne de commande
 tools/make_icon.py           Génération de l'icône de lancement
 docs/demarrage-windows.md    Installation de l'environnement, pas à pas

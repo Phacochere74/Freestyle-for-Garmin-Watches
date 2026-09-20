@@ -7,3 +7,11 @@
 # Le champ de donnees a son propre fichier de projet : datafield.jungle
 project.manifest = manifest.xml
 base.sourcePath = source-common;source-app
+
+# Ressources propres a l'application, en plus des ressources communes.
+# La declaration de complication vit ici et non dans resources/ : ce dossier
+# etant partage, le champ de donnees en heriterait sans avoir la permission
+# ComplicationPublisher dans son manifeste, et la compilation echouerait. Lui
+# donner la permission serait pire : il publierait un doublon de la meme
+# complication dans la liste des cadrans.
+base.resourcePath = resources;resources-app
