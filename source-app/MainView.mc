@@ -195,7 +195,18 @@ class MainView extends WatchUi.View {
                 text = error;
                 color = Graphics.COLOR_ORANGE;
             } else {
-                text = (Config.dataSource() == Config.SOURCE_NIGHTSCOUT) ? "Nightscout" : "Libre 3";
+                // On affiche l'age du dernier RELEVE reussi, distinct de l'age
+                // de la mesure affiche en bas. Les deux ensemble disent si
+                // l'application interroge bien l'API sans y trouver de
+                // nouvelle mesure, ou si c'est elle qui n'interroge pas.
+                var source = (Config.dataSource() == Config.SOURCE_NIGHTSCOUT) ? "Nightscout" : "Libre 3";
+                var lastFetch = Store.getLastFetch();
+                if (lastFetch == null) {
+                    text = source;
+                } else {
+                    var since = Time.now().value() - lastFetch;
+                    text = source + "  releve " + Fmt.formatAge(since);
+                }
             }
         }
 

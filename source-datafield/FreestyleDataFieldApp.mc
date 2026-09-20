@@ -27,20 +27,14 @@ class FreestyleDataFieldApp extends Application.AppBase {
         scheduleBackground();
     }
 
-    //! Appele quand le champ est decharge, c'est-a-dire a la fin de l'activite.
-    //! On supprime alors le reveil periodique : hors activite, ce champ n'a
-    //! personne a qui afficher quoi que ce soit. Connect IQ repartit un budget
-    //! de reveils entre les applications qui en demandent ; laisser celui-ci
-    //! tourner en permanence espacait d'autant ceux de l'application.
+    //! NE PAS supprimer ici le reveil periodique.
+    //!
+    //! onStop() est appele dans TOUS les contextes d'execution, y compris
+    //! celui du service en arriere-plan : quand le service se termine par
+    //! Background.exit(), onStop() suit. Y supprimer l'evenement temporel
+    //! revenait a annuler la programmation apres le premier cycle, et le
+    //! champ ne se rafraichissait plus du tout.
     function onStop(state) {
-        if (!(Toybox has :Background)) {
-            return;
-        }
-        try {
-            Background.deleteTemporalEvent();
-        } catch (e) {
-            // Rien d'enregistre : sans effet.
-        }
     }
 
     function getInitialView() {
