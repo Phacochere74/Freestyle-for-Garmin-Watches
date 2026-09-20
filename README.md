@@ -378,12 +378,14 @@ source-common/               Code partagé par les deux applications
   Arrow.mc                   Flèche de tendance dessinée
 
 source-app/                  Spécifique à l'application
+  ComplicationPublisher.mc   Publication de la glycémie comme complication
   FreestyleApp.mc            Point d'entrée : vue, glance, service background
   MainView.mc                Écran principal (valeur, tendance, courbe)
   MainDelegate.mc            Boutons / tactile
   FreestyleGlanceView.mc     Résumé dans la liste des raccourcis
 
 source-datafield/            Spécifique au champ de données
+  ComplicationPublisher.mc   Version neutre : ce champ ne publie rien
   FreestyleDataFieldApp.mc   Point d'entrée + service background
   GlucoseDataField.mc        Rendu adaptatif selon la taille allouée
 

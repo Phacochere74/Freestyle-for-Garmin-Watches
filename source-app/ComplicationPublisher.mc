@@ -11,9 +11,10 @@
 // lisent pas les complications tierces - il faut un cadran du store qui les
 // prenne en charge.
 //
-// Seule l'application declare la complication dans son manifeste. Ce module
-// etant partage, le champ de donnees l'appelle aussi : updateComplication()
-// leve alors OperationNotAllowedException, que l'on absorbe.
+// Seule l'application declare la complication et porte la permission
+// ComplicationPublisher. Le champ de donnees dispose d'une version neutre de
+// ce module, dans source-datafield : le code partage appelle publish() sans
+// avoir a savoir laquelle des deux applications l'execute.
 //
 using Toybox.Lang;
 
